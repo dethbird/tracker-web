@@ -100,58 +100,47 @@
 	*/
 
 	$app->get('/', function () use ($app, $siteData) {
-	    $app->redirect('/activity');
+	    $app->redirect('/activity/add');
 	});
 
 
 	/**
 	*  ACTIVITY
 	*/
-
 	$app->get('/activity/log', function () use ($app, $client) {
 
 		$response = $client->get("/activity/log")->send();
-		 // echo $response->getBody(true);
 		$response = json_decode($response->getBody(true));
-		// echo "<pre>";
-		// var_dump($response->data);
-		// echo "</pre>";
-		// die();
-	    $app->render('partials/activity_log.html.twig', array("activity"=>$response->data));
+
+	    $app->render('partials/activity_log.html.twig', array(
+	    	"section"=>$app->environment()->offsetGet("PATH_INFO"),
+	    	"activity"=>$response->data
+    	));
+
 	});
 
 	//add new log entry form
-	$app->get('/activity', function () use ($app, $client) {
+	$app->get('/activity/add', function () use ($app, $client) {
 
 		$typeResponse = json_decode($client->get("activity/type")->send()->getBody(true));
 	    $app->render('partials/activity_form.html.twig', array(
-	    	"types" => $typeResponse->data)
-	    );
+	    	"section"=>$app->environment()->offsetGet("PATH_INFO"),
+	    	"types" => $typeResponse->data
+    	));
 	});
 
 	// create an activity
-	$app->post('/activity/', function () use ($app, $client) {
-		// echo "<pre>";
-		// print_r($app->request->params());
-		// echo "</pre>";
-		// die();
+	$app->post('/activity/add', function () use ($app, $client) {
 
 		$response = $client->post("activity", array(), $app->request->params())->send();
 		$response = json_decode($response->getBody(true));
 
-		// var_dump($response->status);
-		// die();
-
 		if($response->status===true){
 			$app->redirect("/activity/log");
 		} else {
-			$app->redirect("/activity");
+			$app->redirect("/activity/add");
 		}
 
-		// $typeResponse = json_decode($client->get("activity/type")->send()->getBody(true));
-	 //    $app->render('partials/activity_form.html.twig', array(
-	 //    	"types" => $typeResponse->data)
-	 //    );
 	});
 
 	/**
