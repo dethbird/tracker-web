@@ -1,7 +1,7 @@
 <html>
   <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-	<title ng-bind="title">{% block title %}RishiSatsangi.com{% endblock %}</title>
+	<title ng-bind="title">{% block title %}trkr{% endblock %}</title>
   
   {% block opengraph_meta %}
     <meta property="og:site_name" content="RishiSatsangi.com - artwerks by Rishi Satsangi">
@@ -15,9 +15,13 @@
   <script src="//assets.artistcontrolbox.com/js/url.min.js"></script>
 
 	<!-- bootstrap -->
-	<link rel="stylesheet" href="//assets.artistcontrolbox.com/bootstrap-3.0.2/css/bootstrap.min.css">
-	<link rel="stylesheet" href="//assets.artistcontrolbox.com/bootstrap-3.0.2/css/bootstrap-theme.min.css">
-	<script src="//assets.artistcontrolbox.com/bootstrap-3.0.2/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+  <link rel="stylesheet" href="/js/lib/bootstrap-datetimepicker/bootstrap-datetimepicker.min.css">
+	<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+  <script src="/js/lib/moment.min.js"></script>
+  <script src="/js/lib/bootstrap-datetimepicker/bootstrap-datetimepicker.min.js"></script>
+
 	
   <link rel="stylesheet" href="/css/site.css">
 
@@ -50,7 +54,7 @@
   {% block headscript %}{% endblock %}
 </head>
 <body>
-
+<!-- 
 <div id="fb-root"></div>
 <script>(function(d, s, id) {
   var js, fjs = d.getElementsByTagName(s)[0];
@@ -59,7 +63,7 @@
   js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=258016587595327";
   fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));</script>
-
+ -->
 <nav class="navbar navbar-default" role="navigation" ng-controller="NavController">
   <!-- Brand and toggle get grouped for better mobile data-dismissplay -->
   <div class="navbar-header">

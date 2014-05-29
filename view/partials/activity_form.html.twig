@@ -1,0 +1,57 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}{{parent()}} / activity / add{% endblock %}
+
+ {% block opengraph_meta %}
+  		{{parent()}}
+		<meta property="og:title" content="RishiSatsangi.com  / Art / {{data.name}}">
+		<meta property="og:description" content="{{data.description|striptags}}">
+  {% endblock %} 
+
+{% block body %}
+	{{ parent() }}
+    <div class="clearfix"></div>
+
+		<div class="row" >
+
+				<form role="form" method="post" action="/activity">
+					<div class="form-group">
+						<label for="activity_type_id">Type</label>
+						{% for type in types %}
+							<div class="radio bg-{%if type.polarity > 0 %}success{%else%}danger{%endif%}">
+								<label>
+								<input type="radio" name="activity_type_id" id="activity_type_id" value="{{ type.id }}" checked>
+								 {{type.name}}
+								</label>
+							</div>
+						{% endfor %}
+					</div>
+					<div class="form-group ">
+						<label for="quantity">Quantity</label>
+						<input type="text" class="form-control" name="quantity" id="quantity" placeholder="1" value="1">
+					</div>
+
+
+					<div class="form-group ">
+						<label for="date_added">When</label>
+						<input type="text" class="form-control" name="date_added" id="date_added">
+					</div>
+				  
+					<div class="form-group ">
+						<button type="submit" class="btn btn-default">Submit</button>
+					</div>
+
+					<script>
+						$(document).ready(function(){
+							var d = new Date();
+							$('#date_added').datetimepicker({
+								defaultDate: d.getTime()
+							});
+							$('#date_added').focus();
+							$('#activity_type_id').focus();
+						});
+					</script>
+				</form>
+		</div>
+{% endblock %}
+

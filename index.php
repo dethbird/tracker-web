@@ -20,9 +20,10 @@
 	    __DIR__ . '/src',
 	    get_include_path(),
 	)));
-	global $api_key, $api_url;
-	$api_key = "c4ca4238a0b923820dcc509a6f75849b";
-	$api_url = "http://artistcontrolbox.com/api";
+	global $api_key, $api_url, $user_id, $client;
+	// $api_key = "c4ca4238a0b923820dcc509a6f75849b";
+	$user_id = 1;
+	$api_url = "http://tracker-api.rishisatsangi.com";
 	$siteData = null;
 
 	/**
@@ -36,6 +37,14 @@
 	
 	require 'vendor/autoload.php';
 
+	use Guzzle\Http\Client;
+
+	$client = new Client($api_url, array(
+	    "request.options" => array(
+	       "headers" => array("user_id" => $user_id)
+	    )
+	));
+
 	class AcmeExtension extends \Twig_Extension
 	{
 	    public function getFilters()
@@ -43,6 +52,7 @@
 	        return array(
 	            new \Twig_SimpleFilter('resizeImage', array($this, 'resizeImage')),
 	            new \Twig_SimpleFilter('print_r', array($this, 'print_r')),
+	            new \Twig_SimpleFilter('date_format', array($this, 'date_format')),
 	        );
 	    }
 
@@ -56,6 +66,11 @@
 	    public function print_r($output)
 	    {
 	        return print_r($output,1);
+	    }
+
+	    public function date_format($date, $format)
+	    {
+	        return date($format, strtotime($date));
 	    }
 
 	    public function getName()
@@ -75,25 +90,6 @@
 	);
 
 
-
-	// load site date for the menu
-	$ch = curl_init();
-	curl_setopt($ch, CURLOPT_URL, $api_url."?api_key=".$api_key); 
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
- 	$siteData = json_decode(curl_exec($ch), true);
- 	curl_close($ch);
-
- 	function fetchData($endpoint, $id){
- 		global $api_key, $api_url;
- 		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, $api_url."/".$endpoint."?id=".$id."&api_key=".$api_key);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
-	 	$data = json_decode(curl_exec($ch), true); 
-	 	curl_close($ch);
-	 	return $data[0];
- 	}
-
-
 	/**
 	* __________               __  .__                
 	* \______   \ ____  __ ___/  |_|__| ____    ____  
@@ -104,35 +100,71 @@
 	*/
 
 	$app->get('/', function () use ($app, $siteData) {
-	    // $app->render('partials/home.html.twig', array('siteData' => $siteData));
-	    $app->redirect('/activity/1');
-	});
-
-	$app->get('/activity/:id', function ($id) use ($app, $siteData) {
-		// echo $id;
-	    $app->render('partials/activity.html.twig', array('siteData' => $siteData, 'data'=>fetchData("activity", $id), 'section'=>'art'));
-	});
-
-	$app->get('/activity/list', function ($id) use ($app, $siteData) {
-	    $app->render('partials/activity.html.twig', array('siteData' => $siteData, 'data'=>fetchData("activity", $id), 'section'=>'art'));
+	    $app->redirect('/activity');
 	});
 
 
-	// $app->get('/contents/:id', function ($id) use ($app, $siteData) {
-	//     $app->render('partials/content.html.twig', array('siteData' => $siteData, 'data'=>fetchData("contents", $id), 'section'=>'art'));
-	// });
+	/**
+	*  ACTIVITY
+	*/
 
-	// $app->get('/comics/:id', function ($id) use ($app, $siteData) {
-	//     $app->render('partials/title.html.twig', array('siteData' => $siteData, 'data'=>fetchData("titles", $id), 'section'=>'comics'));
-	// });
+	$app->get('/activity/log', function () use ($app, $client) {
 
-	// $app->get('/issues/:id', function ($id) use ($app, $siteData) {
-	//     $app->render('partials/issue.html.twig', array('siteData' => $siteData, 'data'=>fetchData("issues", $id), 'section'=>'comics'));
-	// });
+		$response = $client->get("/activity/log")->send();
+		 // echo $response->getBody(true);
+		$response = json_decode($response->getBody(true));
+		// echo "<pre>";
+		// var_dump($response->data);
+		// echo "</pre>";
+		// die();
+	    $app->render('partials/activity_log.html.twig', array("activity"=>$response->data));
+	});
 
-	// $app->get('/blogs/:id', function ($id) use ($app, $siteData) {
-	//     $app->render('partials/feed.html.twig', array('siteData' => $siteData, 'data'=>fetchData("feeds", $id), 'section'=>'blogs'));
-	// });
+	//add new log entry form
+	$app->get('/activity', function () use ($app, $client) {
+
+		$typeResponse = json_decode($client->get("activity/type")->send()->getBody(true));
+	    $app->render('partials/activity_form.html.twig', array(
+	    	"types" => $typeResponse->data)
+	    );
+	});
+
+	// create an activity
+	$app->post('/activity/', function () use ($app, $client) {
+		// echo "<pre>";
+		// print_r($app->request->params());
+		// echo "</pre>";
+		// die();
+
+		$response = $client->post("activity", array(), $app->request->params())->send();
+		$response = json_decode($response->getBody(true));
+
+		// var_dump($response->status);
+		// die();
+
+		if($response->status===true){
+			$app->redirect("/activity/log");
+		} else {
+			$app->redirect("/activity");
+		}
+
+		// $typeResponse = json_decode($client->get("activity/type")->send()->getBody(true));
+	 //    $app->render('partials/activity_form.html.twig', array(
+	 //    	"types" => $typeResponse->data)
+	 //    );
+	});
+
+	/**
+	*  ACTIVITY TYPE
+	*/
+
+	$app->get('/activity/type', function () use ($app, $siteData) {
+	    $app->render('partials/activity_type.html.twig', array());
+	});
+
+	$app->get('/activity/type/add', function () use ($app, $siteData) {
+	    $app->render('partials/activity_type_form.html.twig', array());
+	});
 
 
 

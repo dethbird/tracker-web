@@ -1,6 +1,6 @@
 {% extends 'layout.html.twig' %}
 
-{% block title %}{{parent()}} / activity / add{% endblock %}
+{% block title %}{{parent()}} / activity / log{% endblock %}
 
  {% block opengraph_meta %}
   		{{parent()}}
@@ -11,11 +11,10 @@
 {% block body %}
 	{{ parent() }}
     <div class="clearfix"></div>
-
-		<div class="row" >
-				{% for type in types %}
-
-				{% endfor %}
-		</div>
+		{% for log in activity %}
+			<div class="row" >
+				<span class="label label-{%if log.polarity > 0%}success{%else%}danger{%endif%}">{{log.name}}</span> {{log.date_added|date_format("l F j, Y g:i:a")}}<br />
+			</div>
+		{% endfor %}
 {% endblock %}
 

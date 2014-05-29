@@ -3,6 +3,7 @@
         "slim/slim": "2.4.*",
         "slim/extras": "2.0.*",
         "slim/views": "0.1.*",
-        "twig/twig": "1.*"
+        "twig/twig": "1.*",
+        "guzzlehttp/guzzle": "3.8.1"
     }
 }
