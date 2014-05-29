@@ -107,25 +107,30 @@
 	    $app->render('partials/home.html.twig', array('siteData' => $siteData));
 	});
 
-	$app->get('/galleries/:id', function ($id) use ($app, $siteData) {
-	    $app->render('partials/gallery.html.twig', array('siteData' => $siteData, 'data'=>fetchData("galleries", $id), 'section'=>'art'));
+	$app->get('/activity', function ($id) use ($app, $siteData) {
+	    $app->render('partials/activity.html.twig', array('siteData' => $siteData, 'data'=>fetchData("activity", $id), 'section'=>'art'));
 	});
 
-	$app->get('/contents/:id', function ($id) use ($app, $siteData) {
-	    $app->render('partials/content.html.twig', array('siteData' => $siteData, 'data'=>fetchData("contents", $id), 'section'=>'art'));
+	$app->get('/activity/list', function ($id) use ($app, $siteData) {
+	    $app->render('partials/activity.html.twig', array('siteData' => $siteData, 'data'=>fetchData("activity", $id), 'section'=>'art'));
 	});
 
-	$app->get('/comics/:id', function ($id) use ($app, $siteData) {
-	    $app->render('partials/title.html.twig', array('siteData' => $siteData, 'data'=>fetchData("titles", $id), 'section'=>'comics'));
-	});
 
-	$app->get('/issues/:id', function ($id) use ($app, $siteData) {
-	    $app->render('partials/issue.html.twig', array('siteData' => $siteData, 'data'=>fetchData("issues", $id), 'section'=>'comics'));
-	});
+	// $app->get('/contents/:id', function ($id) use ($app, $siteData) {
+	//     $app->render('partials/content.html.twig', array('siteData' => $siteData, 'data'=>fetchData("contents", $id), 'section'=>'art'));
+	// });
 
-	$app->get('/blogs/:id', function ($id) use ($app, $siteData) {
-	    $app->render('partials/feed.html.twig', array('siteData' => $siteData, 'data'=>fetchData("feeds", $id), 'section'=>'blogs'));
-	});
+	// $app->get('/comics/:id', function ($id) use ($app, $siteData) {
+	//     $app->render('partials/title.html.twig', array('siteData' => $siteData, 'data'=>fetchData("titles", $id), 'section'=>'comics'));
+	// });
+
+	// $app->get('/issues/:id', function ($id) use ($app, $siteData) {
+	//     $app->render('partials/issue.html.twig', array('siteData' => $siteData, 'data'=>fetchData("issues", $id), 'section'=>'comics'));
+	// });
+
+	// $app->get('/blogs/:id', function ($id) use ($app, $siteData) {
+	//     $app->render('partials/feed.html.twig', array('siteData' => $siteData, 'data'=>fetchData("feeds", $id), 'section'=>'blogs'));
+	// });
 
 
 
