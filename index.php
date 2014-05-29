@@ -104,10 +104,12 @@
 	*/
 
 	$app->get('/', function () use ($app, $siteData) {
-	    $app->render('partials/home.html.twig', array('siteData' => $siteData));
+	    // $app->render('partials/home.html.twig', array('siteData' => $siteData));
+	    $app->redirect('/activity/1');
 	});
 
-	$app->get('/activity', function ($id) use ($app, $siteData) {
+	$app->get('/activity/:id', function ($id) use ($app, $siteData) {
+		// echo $id;
 	    $app->render('partials/activity.html.twig', array('siteData' => $siteData, 'data'=>fetchData("activity", $id), 'section'=>'art'));
 	});
 
