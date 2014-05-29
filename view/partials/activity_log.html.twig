@@ -13,7 +13,8 @@
     <div class="clearfix"></div>
 		{% for log in activity %}
 			<div class="row" >
-				<span class="label label-{%if log.polarity > 0%}success{%else%}danger{%endif%}">{{log.name}}</span> {{log.date_added|date_format("l F j, Y g:i:a")}}<br />
+				<span class="label label-{%if log.polarity > 0%}success{%else%}danger{%endif%}">{{log.quantity}}</span> <span class="label label-default">{{log.name}}</span> <small>{{log.date_added|date_format("l F j, Y g:i:a")}}</small>
+				<br />
 			</div>
 		{% endfor %}
 {% endblock %}
