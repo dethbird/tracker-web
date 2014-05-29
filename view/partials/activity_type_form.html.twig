@@ -1,0 +1,49 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}{{parent()}} / activity type / add{% endblock %}
+
+ {% block opengraph_meta %}
+  		{{parent()}}
+		<meta property="og:title" content="RishiSatsangi.com  / Art / {{data.name}}">
+		<meta property="og:description" content="{{data.description|striptags}}">
+  {% endblock %} 
+
+{% block body %}
+	{{ parent() }}
+    <div class="clearfix"></div>
+
+		<div class="row" >
+
+				<form role="form" method="post" action="/activity/type/add">
+					
+					<div class="form-group ">
+						<label for="quantity">Name</label>
+						<input type="text" class="form-control" name="name" id="name" placeholder="Salad" >
+					</div>
+
+
+					<div class="form-group">
+						<label for="polarity">Polarity</label>
+							<div class="radio bg-success">
+								<label>
+								<input type="radio" name="polarity" id="polarity" value="1" checked>
+								 Good
+								</label>
+							</div>
+
+							<div class="radio bg-danger">
+								<label>
+								<input type="radio" name="polarity" id="polarity" value="-1">
+								 Bad
+								</label>
+							</div>
+					</div>
+				  
+					<div class="form-group ">
+						<button type="submit" class="btn btn-default">Submit</button>
+					</div>
+
+				</form>
+		</div>
+{% endblock %}
+

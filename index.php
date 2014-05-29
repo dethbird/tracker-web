@@ -50,17 +50,9 @@
 	    public function getFilters()
 	    {
 	        return array(
-	            new \Twig_SimpleFilter('resizeImage', array($this, 'resizeImage')),
 	            new \Twig_SimpleFilter('print_r', array($this, 'print_r')),
 	            new \Twig_SimpleFilter('date_format', array($this, 'date_format')),
 	        );
-	    }
-
-	    public function resizeImage($url, $width, $height)
-	    {
-	        $url = parse_url($url);
-
-	        return $url['scheme'] . "://" . $url['host'] . "/w". $width . "-h" . $height . $url['path'];
 	    }
 
 	    public function print_r($output)
@@ -107,9 +99,9 @@
 	/**
 	*  ACTIVITY
 	*/
-	$app->get('/activity/log', function () use ($app, $client) {
+	$app->get('/activity', function () use ($app, $client) {
 
-		$response = $client->get("/activity/log")->send();
+		$response = $client->get("/activity/")->send();
 		$response = json_decode($response->getBody(true));
 
 	    $app->render('partials/activity_log.html.twig', array(
@@ -136,11 +128,46 @@
 		$response = json_decode($response->getBody(true));
 
 		if($response->status===true){
-			$app->redirect("/activity/log");
+			$app->redirect("/activity");
 		} else {
 			$app->redirect("/activity/add");
 		}
 
+	});
+
+	//list activity types
+	$app->get('/activity/type', function () use ($app, $client) {
+
+		$typeResponse = json_decode($client->get("activity/type")->send()->getBody(true));
+		// print_R($typeResponse);
+	    $app->render('partials/activity_type_list.html.twig', array(
+	    	"section"=>$app->environment()->offsetGet("PATH_INFO"),
+	    	"types" => $typeResponse->data
+    	));
+	});
+
+	//list activity types
+	$app->get('/activity/type/add', function () use ($app, $client) {
+
+	    $app->render('partials/activity_type_form.html.twig', array(
+	    	"section"=>"/activity/type"
+    	));
+	});
+
+	//list activity types
+	$app->post('/activity/type/add', function () use ($app, $client) {
+
+		var_dump($app->request->params());
+		// die();
+
+		$response = $client->post("activity/type", array(), $app->request->params())->send();
+		$response = json_decode($response->getBody(true));
+
+		if($response->status===true){
+			$app->redirect("/activity/type");
+		} else {
+			$app->redirect("/activity/type/add");
+		}
 	});
 
 	/**

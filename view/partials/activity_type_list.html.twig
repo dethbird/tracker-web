@@ -1,0 +1,26 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}{{parent()}} / activity type / list{% endblock %}
+
+ {% block opengraph_meta %}
+  		{{parent()}}
+		<meta property="og:title" content="RishiSatsangi.com  / Art / {{data.name}}">
+		<meta property="og:description" content="{{data.description|striptags}}">
+  {% endblock %} 
+
+{% block body %}
+	{{ parent() }}
+    <div class="clearfix"></div>
+    <div class="row" >
+    	<a href="/activity/type/add" class="btn btn-primary">add</a>
+    	<br />
+    	<br />
+    </div>
+		{% for type in types %}
+			<div class="row" >
+				<span class="label label-{%if type.polarity > 0%}success{%else%}danger{%endif%}">{{type.name}}</span> 
+				<br />
+			</div>
+		{% endfor %}
+{% endblock %}
+
