@@ -1,0 +1,42 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}{{parent()}} / Comics / {{data.title_name}} / Issue# {{data.issue_number}}: {{data.name}}{% endblock %}
+
+ {% block opengraph_meta %}
+  		{{parent()}}
+		<meta property="og:title" content="RishiSatsangi.com / Comics / {{data.title_name}} / Issue# {{data.issue_number}}: {{data.name}}">
+		<meta property="og:description" content="{{data.name}} | {{data.page_count}} page(s)">
+		<meta property="og:image" content="{{data.page_one_image_url}}">
+  {% endblock %} 
+
+{% block body %}
+	{{ parent() }}
+	<ol class="breadcrumb">
+	  <li>Comics</li>
+	  <li class="active"><a href="/comics/{{data.title_id}}">{{data.title_name}}</a></li>
+	</ol>
+    <h2>Issue #{{data.issue_number}}: {{data.name}}</h2>
+    <div class="clearfix"></div>
+    <blockquote>{{data.description|raw}}</blockquote>
+    <div class="clearfix"></div>
+
+		<div class="row" >
+				{% for page in data.pages %}
+
+					<div class="site-thumbnail col-md-4">
+						Page {{index + 1}}<br />
+						<img src="{{page.image_url|resizeImage(180,180)}}" class="img-rounded acb-thumb" data-image-url="{{page.image_url}}" data-title="Page {{index + 1}}">
+					</div>
+				{% endfor %}
+		</div>
+
+
+		<div class="well well-sm">
+			<div class="fb-like" data-href="{{siteUrl('/issues/')}}{{data.id}}" data-layout="button_count" data-action="like" data-show-faces="true" data-share="true"></div>
+			<a href="//www.pinterest.com/pin/create/button/" data-pin-do="buttonBookmark" ><img src="//assets.pinterest.com/images/pidgets/pinit_fg_en_rect_gray_20.png" /></a>
+			<div class="g-plusone" data-annotation="inline" data-width="150"></div>
+			<a href="https://twitter.com/share" class="twitter-share-button" data-lang="en" data-via="dethbird">Tweet</a>
+		</div>
+
+		<div class="fb-comments" data-href="{{siteUrl('/issues/')}}{{data.id}}" data-numposts="10" data-colorscheme="light" ></div>
+{% endblock %}

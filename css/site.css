@@ -1,0 +1,40 @@
+body {
+	font-family: 'PT Sans Narrow', cursive;
+	font-size: 1.4em;
+	color:#888;
+}
+h1,h2,h3,h4,h5,h6,.navbar-brand {
+	font-family: 'Oleo Script', cursive;
+}
+.site-thumbnail {
+	margin-bottom:25px;
+}
+.site-thumbnail img {
+	margin-top:5px;
+	-webkit-box-shadow: 2px 2px 10px rgba(50, 50, 50, 0.57);
+	-moz-box-shadow:    2px 2px 10px rgba(50, 50, 50, 0.57);
+	box-shadow:         2px 2px 10px rgba(50, 50, 50, 0.57);
+}
+.navbar-default .navbar-brand, .navbar-default .navbar-nav>li>a, .dropdown-menu>li>a {
+	color: #888;
+}
+.acb-thumb, .acb-youtube-thumb {
+	cursor: pointer;
+}
+.acb-full-image {
+	display:inline-block;
+	max-width:95%;
+	max-height:95%;
+	-webkit-box-shadow: 2px 2px 10px rgba(50, 50, 50, 0.57);
+	-moz-box-shadow:    2px 2px 10px rgba(50, 50, 50, 0.57);
+	box-shadow:         2px 2px 10px rgba(50, 50, 50, 0.57);
+}
+.modal-body {
+	text-align: center;
+}
+.left {
+	text-align: left;
+}
+.right {
+	text-align: right;
+}

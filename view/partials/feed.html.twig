@@ -1,0 +1,33 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}{{parent()}} / Blogs / {{data.name}}{% endblock %}
+
+ {% block opengraph_meta %}
+  		{{parent()}}
+		<meta property="og:title" content="RishiSatsangi.com / Blogs / {{data.name}}">
+		<meta property="og:description" content="{{data.description|striptags}} | {{data.site_url}}">
+  {% endblock %} 
+
+{% block body %}
+	{{ parent() }}
+    <h2>{{data.name}}</h2>
+    <div class="clearfix"></div>
+    <a href="{{data.site_url}}" target="_blank">{{data.site_url}}</a><br />
+    <blockquote>{{data.description|raw}}</blockquote>
+    <div class="clearfix"></div>
+
+		<div class="row" >
+				{% for item in data.items %}
+
+					<div class="site-thumbnail col-md-9">
+						<strong>{{item.title}}</strong><br />
+						<small>{{item.date_modified}}</small>
+						<br />
+						<div>{{item.content|raw}}</div>
+						<div class="clearfix"></div>
+
+					</div>
+				{% endfor %}
+		</div>
+{% endblock %}
+

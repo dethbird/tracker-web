@@ -1,0 +1,36 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}{{parent()}} / Art / {{data.name}}{% endblock %}
+
+ {% block opengraph_meta %}
+  		{{parent()}}
+		<meta property="og:title" content="RishiSatsangi.com  / Art / {{data.name}}">
+		<meta property="og:description" content="{{data.description|striptags}}">
+  {% endblock %} 
+
+{% block body %}
+	{{ parent() }}
+    <h2>{{data.name}}</h2>
+    <div class="clearfix"></div>
+    <blockquote>{{data.description|raw}}</blockquote>
+    <div class="clearfix"></div>
+
+		<div class="row" >
+				{% for content in data.contents %}
+
+					<div class="site-thumbnail col-md-3">
+						{{content.name}}<br />
+						
+						{% if content.type=='image' %}
+						<a href='{{siteUrl("/contents/")}}{{content.id}}' title="{{content.name}}"><img src="{{content.image_url|resizeImage(180,180)}}" class="img-rounded" ></a>
+						{% endif %}
+
+						{% if content.type=='youtube' %}
+						<a href='{{siteUrl("/contents/")}}{{content.id}}' title="{{content.name}}"><img src="{{content.image_url|resizeImage(180,180)}}" class="img-rounded" data-youtube-link="{{content.youtube_link}}" data-title="{{content.name}}" ></a>
+						{% endif %}
+
+					</div>
+				{% endfor %}
+		</div>
+{% endblock %}
+

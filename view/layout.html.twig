@@ -1,0 +1,161 @@
+<html>
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<title ng-bind="title">{% block title %}RishiSatsangi.com{% endblock %}</title>
+  
+  {% block opengraph_meta %}
+    <meta property="og:site_name" content="RishiSatsangi.com - artwerks by Rishi Satsangi">
+    <meta property="og:type" content="website">
+  {% endblock %} 
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<!-- jquery -->
+	<script src="//assets.artistcontrolbox.com/js/jquery-1.10.2.min.js"></script>
+  <script src="//assets.artistcontrolbox.com/js/url.min.js"></script>
+
+	<!-- bootstrap -->
+	<link rel="stylesheet" href="//assets.artistcontrolbox.com/bootstrap-3.0.2/css/bootstrap.min.css">
+	<link rel="stylesheet" href="//assets.artistcontrolbox.com/bootstrap-3.0.2/css/bootstrap-theme.min.css">
+	<script src="//assets.artistcontrolbox.com/bootstrap-3.0.2/js/bootstrap.min.js"></script>
+	
+  <link rel="stylesheet" href="/css/site.css">
+
+  <!-- google font -->
+  <link href='http://fonts.googleapis.com/css?family=PT+Sans+Narrow:400,700' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Oleo+Script' rel='stylesheet' type='text/css'>
+  <script>
+    $(document).ready(function(){
+      $('#myModal').on('hidden.bs.modal', function () {
+          $('#myModalContent').html('');
+      });
+      $(document).on('click', '.acb-thumb', function(){
+        $('#myModalLabel').html($(this).attr('data-title'));
+        $('#myModalContent').html("<img src='" + $(this).attr('data-image-url') + "' class='acb-full-image' id='modal-media' />");
+        $('#myModal .modal-dialog').css('width', $(window).width());
+        $('#myModal .modal-dialog').css('height', $(window).height());
+        $('#myModal').modal();
+      });
+      $(document).on('click', '.acb-youtube-thumb', function(){
+        $('#myModalLabel').html($(this).attr('data-title'));
+        var youtube_id = $.url('?v',$(this).attr('data-youtube-link'));
+        $('#myModalContent').html('<iframe id="ytplayer" type="text/html" width="640" height="360" src="https://www.youtube.com/embed/' + youtube_id + '" frameborder="0" allowfullscreen>');
+        $('#myModal .modal-dialog').css('width', $(window).width());
+        $('#myModal .modal-dialog').css('height', $(window).height());
+        $('#myModal').modal();
+      });
+    });
+  </script>
+  
+  {% block headscript %}{% endblock %}
+</head>
+<body>
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=258016587595327";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+<nav class="navbar navbar-default" role="navigation" ng-controller="NavController">
+  <!-- Brand and toggle get grouped for better mobile data-dismissplay -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#gallery-navbar-collapse">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" href="/">RS</a>
+  </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse" id="gallery-navbar-collapse">
+    <ul class="nav navbar-nav">
+      <li class="dropdown{%if section=='art'%} active{%endif%}">
+        <a class="dropdown-toggle" data-toggle="dropdown">Art <b class="caret"></b></a>
+        <ul class="dropdown-menu">
+          {% for gallery in siteData.galleries %}
+          	<li><a href="/galleries/{{gallery.id}}" >{{gallery.name}}</a></li>
+          {% endfor %}
+        </ul>
+      </li>
+       <li class="dropdown{%if section=='comics'%} active{%endif%}">
+        <a class="dropdown-toggle" data-toggle="dropdown">Comics <b class="caret"></b></a>
+        <ul class="dropdown-menu">
+          {% for title in siteData.titles %}
+          	<li><a href="/comics/{{title.id}}" >{{title.name}}</a></li>
+          {% endfor %}
+        </ul>
+      </li>
+       <li class="dropdown{%if section=='blogs'%} active{%endif%}">
+        <a class="dropdown-toggle" data-toggle="dropdown">Blogs <b class="caret"></b></a>
+        <ul class="dropdown-menu">
+          {% for feed in siteData.feeds %}
+          	<li><a href="/blogs/{{feed.id}}" >{{feed.name}}</a></li>
+          {% endfor %}
+        </ul>
+      </li>
+       <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown">Contact <b class="caret"></b></a>
+        <ul class="dropdown-menu">
+          <li><a>Twitter: @dethbird</a></li>
+          <li><a>Facebook: brownestartist</a></li>
+          <li><a>Instagram: @dethbird</a></li>
+        </ul>
+      </li>
+    </ul>
+  </div><!-- /.navbar-collapse -->
+</nav>
+
+<div class="container">
+	{% block body %}{% endblock %}
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h2 class="modal-title" id="myModalLabel">Modal title</h2>
+      </div>
+      <div class="modal-body" id="myModalContent">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+<center>&copy; 2014 RishiSatsangi.com</center>
+</div>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+  <!-- Please call pinit.js only once per page -->
+  <script type="text/javascript" async src="//assets.pinterest.com/js/pinit.js"></script>
+<!-- Place this tag after the last +1 button tag. -->
+<script type="text/javascript">
+  (function() {
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/platform.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();
+</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-9206010-2', 'rishisatsangi.com');
+  ga('send', 'pageview');
+
+</script>
+</body>
+</html>
