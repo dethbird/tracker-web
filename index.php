@@ -52,6 +52,7 @@
 	        return array(
 	            new \Twig_SimpleFilter('print_r', array($this, 'print_r')),
 	            new \Twig_SimpleFilter('date_format', array($this, 'date_format')),
+	            new \Twig_SimpleFilter('activity_name_label', array($this, 'activity_name_label')),
 	        );
 	    }
 
@@ -68,6 +69,15 @@
 	    public function getName()
 	    {
 	        return 'acme_extension';
+	    }
+
+
+	    public function activity_name_label($activity_type_id, $acivity_types)
+	    {
+	    	$activity_type = $acivity_types[$activity_type_id];
+	    	// $str = '<span class="label label-{%if log.polarity > 0%}success{%else%}danger{%endif%}">{{log.activity_type_id}}</span>'
+	    	return '<span class="label label-'.($activity_type['polarity']>0?"success":"danger").'">'.$activity_type['name'].'</span>';
+	        //return date($format, strtotime($date));
 	    }
 	}
 

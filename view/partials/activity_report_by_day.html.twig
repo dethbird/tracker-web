@@ -11,9 +11,15 @@
 {% block body %}
 	{{ parent() }}
     <div class="clearfix"></div>
-<!--     <pre>
-    {{report.timeframes|print_r}}
-</pre> -->
+
+<pre>
+{{report.ativity_types|print_r}}
+</pre>
+
+<pre>
+{{report.timeframes|print_r}}
+</pre>
+
 		{% for key, timeframe in report.timeframes %}
 			<div class="row" >
 <!-- 
@@ -37,7 +43,8 @@
 							 	<span class="badge">{{log.quantity}}</span>
 							 </td>
 							 <td class="name">
-							 	<span class="label label-{%if log.polarity > 0%}success{%else%}danger{%endif%}">{{log.name}}</span>
+							 	{{log.activity_type_id|activity_name_label(report.ativity_types)|raw}}
+							 	<!-- <span class="label label-{%if log.polarity > 0%}success{%else%}danger{%endif%}">{{log.activity_type_id}}</span> -->
 							 </td>
 							 <td class="time">
 							 	 <small>{{log.date_added|date_format("g:i:a")}}</small>
@@ -51,7 +58,7 @@
 				<h5>Occurrence</h5>
 				      	<div class="container">
 					 {% for key,log in timeframe.occurrence %}
-							 <span class="label label-default">{{key}}</span> <span class="badge">{{log}}</span>
+							 {{key|activity_name_label(report.ativity_types)|raw}} <span class="badge">{{log}}</span>
 							 <br />
 					 {% endfor %}
 						</div>
@@ -60,7 +67,7 @@
 				<h5>Quantity</h5>
 				      	<div class="container">
 					 {% for key,log in timeframe.quantity %}
-							 <span class="label label-default">{{key}}</span> <span class="badge">{{log}}</span>
+							 {{key|activity_name_label(report.ativity_types)|raw}} <span class="badge">{{log}}</span>
 							 <br />
 					 {% endfor %}
 						</div>		
