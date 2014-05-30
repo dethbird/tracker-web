@@ -99,9 +99,9 @@
 	/**
 	*  ACTIVITY
 	*/
-	$app->get('/activity', function () use ($app, $client) {
+	$app->get('/activity/log', function () use ($app, $client) {
 
-		$response = $client->get("/activity/")->send();
+		$response = $client->get("/activity/log")->send();
 		$response = json_decode($response->getBody(true));
 
 	    $app->render('partials/activity_log.html.twig', array(
@@ -128,7 +128,7 @@
 		$response = json_decode($response->getBody(true));
 
 		if($response->status===true){
-			$app->redirect("/activity");
+			$app->redirect("/activity/log");
 		} else {
 			$app->redirect("/activity/add");
 		}
