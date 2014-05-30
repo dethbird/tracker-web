@@ -38,3 +38,14 @@ h1,h2,h3,h4,h5,h6,.navbar-brand {
 .right {
 	text-align: right;
 }
+
+td.quantity {
+	width:100px;
+	text-align:right;
+}
+td.name {
+	width:150px;
+}
+td.time {
+	text-align:left;
+}

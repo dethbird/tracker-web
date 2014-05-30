@@ -1,0 +1,80 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}{{parent()}} / activity type / list{% endblock %}
+
+ {% block opengraph_meta %}
+  		{{parent()}}
+		<meta property="og:title" content="RishiSatsangi.com  / Art / {{data.name}}">
+		<meta property="og:description" content="{{data.description|striptags}}">
+  {% endblock %} 
+
+{% block body %}
+	{{ parent() }}
+    <div class="clearfix"></div>
+<!--     <pre>
+    {{report.timeframes|print_r}}
+</pre> -->
+		{% for key, timeframe in report.timeframes %}
+			<div class="row" >
+<!-- 
+				<span class="label label-{%if type.polarity > 0%}success{%else%}danger{%endif%}">{{type.name}}</span> 
+				<br />
+				 -->
+				 <h3>{{key|date_format("l F j, Y")}}</h3>
+				 <h5>Logs</h5>
+				 <table class="table table-striped">
+				 	<thead>
+			        <tr>
+			          <th>Quantity</th>
+			          <th>Type</th>
+			          <th>Time</th>
+			        </tr>
+			      </thead>
+			      <tbody>
+					 {% for log in timeframe.logs %}
+				      	<tr>
+							 <td class="quantity">
+							 	<span class="badge">{{log.quantity}}</span>
+							 </td>
+							 <td class="name">
+							 	<span class="label label-{%if log.polarity > 0%}success{%else%}danger{%endif%}">{{log.name}}</span>
+							 </td>
+							 <td class="time">
+							 	 <small>{{log.date_added|date_format("g:i:a")}}</small>
+							 </td>
+						</tr>
+					 {% endfor %}
+			 	   <tbody>
+				</table>
+
+
+				<h5>Occurrence</h5>
+				      	<div class="container">
+					 {% for key,log in timeframe.occurrence %}
+							 <span class="label label-default">{{key}}</span> <span class="badge">{{log}}</span>
+							 <br />
+					 {% endfor %}
+						</div>
+
+
+				<h5>Quantity</h5>
+				      	<div class="container">
+					 {% for key,log in timeframe.quantity %}
+							 <span class="label label-default">{{key}}</span> <span class="badge">{{log}}</span>
+							 <br />
+					 {% endfor %}
+						</div>		
+
+
+				<h5>Polarity</h5>
+				      	<div class="container">
+					 {% for key,log in timeframe.polarity %}
+							 <span class="label label-{%if key=="good" %}success{%else%}danger{%endif%}">{{key}}</span> <span class="badge">{{log}}</span>
+							 <br />
+					 {% endfor %}
+						</div>				
+			</div>
+			<hr />
+			<br /><br />
+		{% endfor %}
+{% endblock %}

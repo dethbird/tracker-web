@@ -128,7 +128,7 @@
 		$response = json_decode($response->getBody(true));
 
 		if($response->status===true){
-			$app->redirect("/activity/log");
+			$app->redirect("/activity/report");
 		} else {
 			$app->redirect("/activity/add");
 		}
@@ -157,7 +157,7 @@
 	//list activity types
 	$app->post('/activity/type/add', function () use ($app, $client) {
 
-		var_dump($app->request->params());
+		// var_dump($app->request->params());
 		// die();
 
 		$response = $client->post("activity/type", array(), $app->request->params())->send();
@@ -170,16 +170,27 @@
 		}
 	});
 
+
+
 	/**
-	*  ACTIVITY TYPE
+	*  REPORTS 
 	*/
 
-	$app->get('/activity/type', function () use ($app, $siteData) {
-	    $app->render('partials/activity_type.html.twig', array());
+	$app->get('/activity/report', function () use ($app, $siteData) {
+	    $app->redirect('/activity/report/by/day');
 	});
 
-	$app->get('/activity/type/add', function () use ($app, $siteData) {
-	    $app->render('partials/activity_type_form.html.twig', array());
+
+	$app->get('/activity/report/by/day', function () use ($app, $client) {
+
+		$response = $client->get("/activity/report/by/day")->send();
+		$response = json_decode($response->getBody(true), true);
+
+	    $app->render('partials/activity_report_by_day.html.twig', array(
+	    	"section"=>$app->environment()->offsetGet("PATH_INFO"),
+	    	"report"=>$response['data']
+    	));
+
 	});
 
 
