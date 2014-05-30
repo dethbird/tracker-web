@@ -18,10 +18,10 @@
 					<div class="form-group">
 						<label for="activity_type_id">Type</label>
 						{% for type in types %}
-							<div class="radio bg-{%if type.polarity > 0 %}success{%else%}danger{%endif%}">
+							<div class="radio">
 								<label>
 								<input type="radio" name="activity_type_id" id="activity_type_id" value="{{ type.id }}" checked>
-								 {{type.name}}
+								 <span class="label label-{%if type.polarity > 0%}success{%else%}danger{%endif%}">{{type.name}}</span> 
 								</label>
 							</div>
 						{% endfor %}
