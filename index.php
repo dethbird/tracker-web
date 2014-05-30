@@ -12,6 +12,7 @@
 	ini_set('error_reporting', E_ALL);
 	ini_set('display_errors', 1);
 	define("APPLICATION_PATH", __DIR__);
+	define("ENVIRONMENT", 'dev'); // dev | prod
 	date_default_timezone_set('America/Los_Angeles');
 
 	// Ensure src/ is on include_path
@@ -23,8 +24,7 @@
 	global $api_key, $api_url, $user_id, $client;
 	// $api_key = "c4ca4238a0b923820dcc509a6f75849b";
 	$user_id = 1;
-	$api_url = "http://tracker-api.rishisatsangi.com";
-	$siteData = null;
+	$api_url = "http://tracker-api".(ENVIRONMENT=="prod" ? null : "-" . ENVIRONMENT).".rishisatsangi.com";
 
 	/**
 	* __________               __                                
@@ -91,7 +91,7 @@
 	*         \/                           \//_____/  	
 	*/
 
-	$app->get('/', function () use ($app, $siteData) {
+	$app->get('/', function () use ($app) {
 	    $app->redirect('/activity/add');
 	});
 
@@ -176,7 +176,7 @@
 	*  REPORTS 
 	*/
 
-	$app->get('/activity/report', function () use ($app, $siteData) {
+	$app->get('/activity/report', function () use ($app) {
 	    $app->redirect('/activity/report/by/day');
 	});
 
