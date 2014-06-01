@@ -12,13 +12,17 @@
 	ini_set('error_reporting', E_ALL);
 	ini_set('display_errors', 1);
 	define("APPLICATION_PATH", __DIR__ . "/..");
-	define("ENVIRONMENT", 'dev'); // dev | prod
 	date_default_timezone_set('America/Los_Angeles');
 
-	global $api_key, $api_url, $user_id, $client;
-	// $api_key = "c4ca4238a0b923820dcc509a6f75849b";
+	//read env file
+	// # just points to environment config yml
+	$env = parse_ini_file("../env.ini");
+	$configs = parse_ini_file($env['config_file']);
+
+	global $api_url, $user_id, $client;
 	$user_id = 1;
-	$api_url = "http://tracker-api".(ENVIRONMENT=="prod" ? null : "-" . ENVIRONMENT).".rishisatsangi.com";
+	$api_url = $configs['api_url'];
+
 
 	/**
 	* __________               __                                
@@ -69,9 +73,7 @@
 	    public function activity_name_label($activity_type_id, $acivity_types)
 	    {
 	    	$activity_type = $acivity_types[$activity_type_id];
-	    	// $str = '<span class="label label-{%if log.polarity > 0%}success{%else%}danger{%endif%}">{{log.activity_type_id}}</span>'
 	    	return '<span class="label label-'.($activity_type['polarity']>0?"success":"danger").'">'.$activity_type['name'].'</span>';
-	        //return date($format, strtotime($date));
 	    }
 	}
 
