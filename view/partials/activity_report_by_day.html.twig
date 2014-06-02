@@ -34,6 +34,8 @@
 			          <th>Quantity</th>
 			          <th>Type</th>
 			          <th>Time</th>
+			          <th>Note</th>
+			          <th>&nbsp;</th>
 			        </tr>
 			      </thead>
 			      <tbody>
@@ -48,6 +50,12 @@
 							 </td>
 							 <td class="time">
 							 	 <small>{{log.date_added|date_format("g:i:a")}}</small>
+							 </td>
+							 <td class="note">
+							 	  <small>{{log.note}}</small>
+							 </td>
+							 <td class="time">
+							 	  <a class="btn btn-xs remove" >remove</a>
 							 </td>
 						</tr>
 					 {% endfor %}
