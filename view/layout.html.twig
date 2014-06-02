@@ -91,7 +91,22 @@
 </nav>
 
 <div class="container">
-	{% block body %}{% endblock %}
+  
+  {% if flash.error != "" %}
+  <div class="alert alert-danger alert-dismissable">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+    <strong>Error!</strong> {{flash.error}}
+  </div>
+  {% endif %}
+
+  {% if flash.success != "" %}
+  <div class="alert alert-success alert-dismissable">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+    <strong>Success!</strong> {{flash.success}}
+  </div>
+  {% endif %}
+	
+  {% block body %}{% endblock %}
 </div>
 
 <!-- Modal -->
@@ -143,5 +158,16 @@
 
 </script>
  -->
+ <script>
+  $(document).ready(function(){
+    setTimeout(
+      function(){
+        $('div.alert').fadeOut();
+      },
+      1500
+    );
+    
+  });
+ </script>
 </body>
 </html>

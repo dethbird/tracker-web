@@ -9,6 +9,7 @@
 	* \____|__  /   __/|   __/  /____  >\___  >__| |____/|   __/ 
 	*         \/|__|   |__|          \/     \/           |__|    
 	*/
+	session_start();
 	ini_set('error_reporting', E_ALL);
 	ini_set('display_errors', 1);
 	define("APPLICATION_PATH", __DIR__ . "/..");
@@ -135,7 +136,8 @@
 		$response = json_decode($response->getBody(true));
 
 		if($response->status===true){
-			$app->redirect("/activity/report");
+			$app->flash("success", "Activity logged");
+			$app->redirect("/activity/report/by/day");
 		} else {
 			$app->redirect("/activity/add");
 		}
@@ -150,7 +152,8 @@
 		$response = $request->send();
 
 		$response = json_decode($response->getBody(true));
-		$app->redirect("/activity/report");
+		$app->flash("success", "Activity deleted");
+		$app->redirect("/activity/report/by/day");
 
 	});
 
@@ -196,6 +199,7 @@
 		$response = json_decode($response->getBody(true));
 
 		if($response->status===true){
+			$app->flash("success", "Activity type updated");
 			$app->redirect("/activity/type");
 		} else {
 			$app->redirect("/activity/type/update/".$id);
