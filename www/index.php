@@ -75,6 +75,7 @@
 	    	$activity_type = $acivity_types[$activity_type_id];
 	    	return '<span class="label label-'.($activity_type['polarity']>0?"success":"danger").'">'.$activity_type['name'].'</span>';
 	    }
+
 	}
 
 	$app = new \Slim\Slim(array(
@@ -164,7 +165,7 @@
     	));
 	});
 
-	//list activity types
+	//add activity type form
 	$app->get('/activity/type/add', function () use ($app, $client) {
 
 	    $app->render('partials/activity_type_form.html.twig', array(
@@ -172,11 +173,9 @@
     	));
 	});
 
-	//list activity types
-	$app->post('/activity/type/add', function () use ($app, $client) {
 
-		// var_dump($app->request->params());
-		// die();
+	//add activity type
+	$app->post('/activity/type', function () use ($app, $client) {
 
 		$response = $client->post("activity/type", array(), $app->request->params())->send();
 		$response = json_decode($response->getBody(true));
@@ -186,6 +185,36 @@
 		} else {
 			$app->redirect("/activity/type/add");
 		}
+	});
+
+	//update activity type
+	$app->post('/activity/type/:id', function ($id) use ($app, $client) {
+
+		$params = $app->request->params();
+
+		$response = $client->patch("activity/type/".$id, array(), $params)->send();
+		$response = json_decode($response->getBody(true));
+
+		if($response->status===true){
+			$app->redirect("/activity/type");
+		} else {
+			$app->redirect("/activity/type/update/".$id);
+		}
+	});
+
+
+	//edit activity type form
+	$app->get('/activity/type/update/:id', function ($id) use ($app, $client) {
+
+		//retrieve the record
+		$request = $client->get("activity/type/".$id);
+		$response = $request->send();
+		$response = json_decode($response->getBody(true));
+
+	    $app->render('partials/activity_type_form.html.twig', array(
+	    	"section"=>"/activity/type",
+	    	"type" => $response->data[0]
+    	));
 	});
 
 

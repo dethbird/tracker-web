@@ -10,15 +10,16 @@
 
 {% block body %}
 	{{ parent() }}
+	<!-- {{type|print_r}} -->
     <div class="clearfix"></div>
 
 		<div class="row" >
 
-				<form role="form" method="post" action="/activity/type/add">
+				<form role="form" method="post" action="/activity/type{% if type.id!="" %}/{{type.id}}{% endif %}" >
 					
 					<div class="form-group ">
 						<label for="quantity">Name</label>
-						<input type="text" class="form-control" name="name" id="name" placeholder="Salad" >
+						<input type="text" class="form-control" name="name" id="name" placeholder="Salad" value="{{type.name}}">
 					</div>
 
 
@@ -26,14 +27,14 @@
 						<label for="polarity">Polarity</label>
 							<div class="radio">
 								<label>
-								<input type="radio" name="polarity" id="polarity" value="1" checked>
+								<input type="radio" name="polarity" id="polarity" value="1" {% if type.polarity > 0 %}checked{% endif %} {% if type.polarity == "" %}checked{% endif %}>
 								 <span class="label label-success">Good</span> 
 								</label>
 							</div>
 
 							<div class="radio">
 								<label>
-								<input type="radio" name="polarity" id="polarity" value="-1">
+								<input type="radio" name="polarity" id="polarity" value="-1" {% if type.polarity !="" %}{% if type.polarity < 0 %}checked{% endif %}{% endif %}>
 								 <span class="label label-danger">Bad</span> 
 								</label>
 							</div>
