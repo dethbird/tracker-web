@@ -141,6 +141,18 @@
 
 	});
 
+	// delete an activity
+	$app->post('/activity/delete', function () use ($app, $client) {
+
+		$request = $client->delete("activity");
+		$request->getQuery()->set('id', $app->request->params('id'));
+		$response = $request->send();
+
+		$response = json_decode($response->getBody(true));
+		$app->redirect("/activity/report");
+
+	});
+
 	//list activity types
 	$app->get('/activity/type', function () use ($app, $client) {
 
