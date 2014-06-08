@@ -14,7 +14,7 @@
     <div class="clearfix"></div>
 
 		<div class="row" >
-
+				<h1>{% if type.id!="" %}Edit{% endif %} Activity</h1>
 				<form role="form" method="post" action="/activity/type{% if type.id!="" %}/{{type.id}}{% endif %}" >
 					
 					<div class="form-group ">

@@ -355,7 +355,12 @@
 			$app->flash("success", "Logged in");
 		}
 
-		$app->redirect("/");
+		//create new activity
+		if(isset($_SESSION['user']->is_new)){
+			$app->redirect("/activity/type/add");
+		} else {
+			$app->redirect("/");
+		}
 
 	});
 
