@@ -1,0 +1,20 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}{{parent()}} / activity type / list{% endblock %}
+
+ {% block opengraph_meta %}
+  		{{parent()}}
+		<meta property="og:title" content="RishiSatsangi.com  / Art / {{data.name}}">
+		<meta property="og:description" content="{{data.description|striptags}}">
+  {% endblock %} 
+
+{% block body %}
+	{{ parent() }}
+    <div class="clearfix"></div>
+    <div class="row" >
+    	<h1>Auth</h1>
+    	<br />
+    	<a href="{{googleAuthUrl}}" class="btn btn-primary">Login with Google+</a>
+    </div>
+{% endblock %}
+
