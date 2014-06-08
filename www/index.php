@@ -85,7 +85,7 @@
 	    public function activity_name_label($activity_type_id, $acivity_types)
 	    {
 	    	$activity_type = $acivity_types[$activity_type_id];
-	    	return '<span class="label label-'.($activity_type['polarity']>0?"suc cess":"danger").'">'.$activity_type['name'].'</span>';
+	    	return '<span class="label label-'.($activity_type['polarity']>0?"success":"danger").'">'.$activity_type['name'].'</span>';
 	    }
 
 	}
