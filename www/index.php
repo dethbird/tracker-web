@@ -165,7 +165,7 @@
 
 	$app->get('/logout', function () use ($app, $googleClient) {
 		global $configs; 
-		
+
 		//clear cookies and session
 		unset($_SESSION['user']);
 		setcookie("auth_token", "", time() - 3600, "/", $configs['cookie.domain'], false, true);
@@ -334,7 +334,7 @@
 
 		$client->setDefaultOption(
 	       "headers",  array(
-		       "auth_token" => "c4ca4238a0b923820dcc509a6f75849b"
+		       "auth_token" => $configs['app_auth_token']
 	       	)
 	    );
 
