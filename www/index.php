@@ -15,19 +15,16 @@
 	define("APPLICATION_PATH", __DIR__ . "/..");
 	date_default_timezone_set('America/Los_Angeles');
 
+
+	global $configs,
+		$client,
+		$googleClient;
+
+
 	//read env file
 	// # just points to environment config yml
 	$env = parse_ini_file("../env.ini");
 	$configs = parse_ini_file($env['config_file']);
-
-	global $api_url, 
-		$user_id,
-		$client,
-		$googleClient;
-
-	$user_id = 1;
-	$api_url = $configs['api_url'];
-
 
 	/**
 	* __________               __                                
@@ -44,13 +41,13 @@
 	use Google\Client as GoogleClient;
 
 	$googleClient = new Google_Client();
-	$googleClient->setClientId("478947664225-j1fndcve7sc45mia8rrqghvjd7u9j5df.apps.googleusercontent.com");
-	$googleClient->setClientSecret("F-YEjw-iV91SURUgp3w2g4WZ");
-	$googleClient->setScopes("https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/userinfo.email");
-	$googleClient->setRedirectUri("http://tracker-dev.rishisatsangi.com/callback/oauth/google");
+	$googleClient->setClientId($configs['google.client_id']);
+	$googleClient->setClientSecret($configs['google.client_secret']);
+	$googleClient->setScopes($configs['google.scopes']);
+	$googleClient->setRedirectUri($configs['google.redirect_url']);
 	
 
-	$client = new Client($api_url, array(
+	$client = new Client($configs['api_url'], array(
 	    "request.options" => array(
 	       "headers" => array(
 		       "auth_token" => isset($_COOKIE['auth_token']) ? $_COOKIE['auth_token'] : false
@@ -120,6 +117,7 @@
 	{
 		return function () use ( $app, $client ) 
 		{
+			global $configs;
 
 			//if no auth token
 			if (!isset($_COOKIE['auth_token'])) {
@@ -135,7 +133,7 @@
 
 				if($response->status===true && isset($response->data->id)) {
 					$_SESSION['user'] = $response->data;
-					setcookie("auth_token", $_SESSION['user']->auth_token, time()+60*60*24*30, "/", "rishisatsangi.com", false, true);
+					setcookie("auth_token", $_SESSION['user']->auth_token, time()+60*60*24*30, "/", $configs['cookie.domain'], false, true);
 					$_COOKIE['auth_token'] = $_SESSION['user']->auth_token;
 					$app->redirect('/');
 				} else {
@@ -166,10 +164,11 @@
 	});
 
 	$app->get('/logout', function () use ($app, $googleClient) {
+		global $configs; 
 		
 		//clear cookies and session
 		unset($_SESSION['user']);
-		setcookie("auth_token", "", time() - 3600, "/", "rishisatsangi.com", false, true);
+		setcookie("auth_token", "", time() - 3600, "/", $configs['cookie.domain'], false, true);
 		unset($_COOKIE['auth_token']);
 		session_destroy();
 		$app->redirect('/auth');
@@ -316,6 +315,8 @@
 
 	$app->get('/callback/oauth/google', function () use ($app, $client, $googleClient) {
 
+		global $configs;
+
 		$googleClient->authenticate($_GET['code']);
 		$accessToken = $googleClient->getAccessToken();
 		$googleClient->setAccessToken($accessToken);
@@ -344,7 +345,7 @@
 		// echo "<pre>"; print_r($response); echo "</pre>"; die();
 
 		$_SESSION['user'] = $response->data;
-		setcookie("auth_token", $_SESSION['user']->auth_token, time()+60*60*24*30, "/", "rishisatsangi.com", false, true);
+		setcookie("auth_token", $_SESSION['user']->auth_token, time()+60*60*24*30, "/", $configs['cookie.domain'], false, true);
 		$_COOKIE['auth_token'] = $_SESSION['user']->auth_token;
 
 		// add flash message
