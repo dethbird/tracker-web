@@ -77,7 +77,7 @@
 							 	{{log.activity_type_id|activity_name_label(report.activity_types)|raw}}
 							 </td>
 							 <td class="time">
-							 	 <small>{{log.date_added|date_format("g:i:a")}}</small>
+							 	 <small>{{log.date_added.date|date_format}}</small>
 							 </td>
 							 <td class="note">
 							 	  <small>{{log.note}}</small>

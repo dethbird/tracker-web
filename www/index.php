@@ -13,7 +13,7 @@
 	ini_set('error_reporting', E_ALL);
 	ini_set('display_errors', 1);
 	define("APPLICATION_PATH", __DIR__ . "/..");
-	date_default_timezone_set('America/Los_Angeles');
+	date_default_timezone_set('America/New_York');
 
 
 	global $configs,
@@ -71,8 +71,9 @@
 	        return print_r($output,1);
 	    }
 
-	    public function date_format($date, $format)
+	    public function date_format($date, $format = "F j, Y g:i:a")
 	    {
+	    	// echo $date; die();
 	        return date($format, strtotime($date));
 	    }
 
@@ -191,7 +192,7 @@
 	});
 
 	// create an activity
-	$app->post('/activity/add', function () use ($app, $client) {
+	$app->post('/activity/add', $authCheck($app, $client), function () use ($app, $client) {
 
 		$response = $client->post("activity", array(), $app->request->params())->send();
 		$response = json_decode($response->getBody(true));
@@ -206,7 +207,7 @@
 	});
 
 	// delete an activity
-	$app->post('/activity/delete', function () use ($app, $client) {
+	$app->post('/activity/delete', $authCheck($app, $client), function () use ($app, $client) {
 
 		$request = $client->delete("activity");
 		$request->getQuery()->set('id', $app->request->params('id'));
@@ -219,7 +220,7 @@
 	});
 
 	//list activity types
-	$app->get('/activity/type', function () use ($app, $client) {
+	$app->get('/activity/type', $authCheck($app, $client), function () use ($app, $client) {
 
 		$typeResponse = json_decode($client->get("activity/type")->send()->getBody(true));
 		// print_R($typeResponse);
@@ -231,7 +232,7 @@
 	});
 
 	//add activity type form
-	$app->get('/activity/type/add', function () use ($app, $client) {
+	$app->get('/activity/type/add', $authCheck($app, $client), function () use ($app, $client) {
 
 	    $app->render('partials/activity_type_form.html.twig', array(
 	    	"section"=>"/activity/type",
@@ -241,7 +242,7 @@
 
 
 	//add activity type
-	$app->post('/activity/type', function () use ($app, $client) {
+	$app->post('/activity/type', $authCheck($app, $client), function () use ($app, $client) {
 
 		$response = $client->post("activity/type", array(), $app->request->params())->send();
 		$response = json_decode($response->getBody(true));
@@ -254,7 +255,7 @@
 	});
 
 	//update activity type
-	$app->post('/activity/type/:id', function ($id) use ($app, $client) {
+	$app->post('/activity/type/:id', $authCheck($app, $client), function ($id) use ($app, $client) {
 
 		$params = $app->request->params();
 
@@ -271,7 +272,7 @@
 
 
 	//edit activity type form
-	$app->get('/activity/type/update/:id', function ($id) use ($app, $client) {
+	$app->get('/activity/type/update/:id', $authCheck($app, $client), function ($id) use ($app, $client) {
 
 		//retrieve the record
 		$request = $client->get("activity/type/".$id);
@@ -291,12 +292,12 @@
 	*  REPORTS 
 	*/
 
-	$app->get('/activity/report', function () use ($app) {
+	$app->get('/activity/report', $authCheck($app, $client), function () use ($app) {
 	    $app->redirect('/activity/report/by/day');
 	});
 
 
-	$app->get('/activity/report/by/day', function () use ($app, $client) {
+	$app->get('/activity/report/by/day', $authCheck($app, $client), function () use ($app, $client) {
 
 		$response = $client->get("/activity/report/by/day")->send();
 		$response = json_decode($response->getBody(true), true);
