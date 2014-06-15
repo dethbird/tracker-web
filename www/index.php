@@ -149,6 +149,9 @@
 		};
 	};
 
+	/**
+	*  AUTH
+	*/
 
 	$app->get('/', $authCheck($app, $client), function () use ($app) {
 	    $app->redirect('/activity/add');
@@ -219,6 +222,10 @@
 
 	});
 
+	/**
+	*  TYPES
+	*/	
+
 	//list activity types
 	$app->get('/activity/type', $authCheck($app, $client), function () use ($app, $client) {
 
@@ -241,6 +248,21 @@
 	});
 
 
+	//edit activity type form
+	$app->get('/activity/type/:id', $authCheck($app, $client), function ($id) use ($app, $client) {
+
+		//retrieve the record
+		$request = $client->get("activity/type/".$id);
+		$response = $request->send();
+		$response = json_decode($response->getBody(true));
+
+	    $app->render('partials/activity_type_form.html.twig', array(
+	    	"section"=>"/activity/type",
+	    	"type" => $response->data[0],
+	    	"user" => $_SESSION['user']
+    	));
+	});
+
 	//add activity type
 	$app->post('/activity/type', $authCheck($app, $client), function () use ($app, $client) {
 
@@ -248,6 +270,7 @@
 		$response = json_decode($response->getBody(true));
 
 		if($response->status===true){
+			$app->flash("success", "Activity type added");
 			$app->redirect("/activity/type");
 		} else {
 			$app->redirect("/activity/type/add");
@@ -271,21 +294,80 @@
 	});
 
 
-	//edit activity type form
-	$app->get('/activity/type/update/:id', $authCheck($app, $client), function ($id) use ($app, $client) {
 
-		//retrieve the record
-		$request = $client->get("activity/type/".$id);
-		$response = $request->send();
-		$response = json_decode($response->getBody(true));
+	/**
+	*  GOALS
+	*/	
 
-	    $app->render('partials/activity_type_form.html.twig', array(
-	    	"section"=>"/activity/type",
-	    	"type" => $response->data[0],
+	//list goals
+	$app->get('/goals', $authCheck($app, $client), function () use ($app, $client) {
+
+		$response = json_decode($client->get("goals")->send()->getBody(true));
+	    $app->render('partials/goal_list.html.twig', array(
+	    	"section"=>$app->environment()->offsetGet("PATH_INFO"),
+	    	"goals" => $response->data,
 	    	"user" => $_SESSION['user']
     	));
 	});
 
+	//add goal form
+	$app->get('/goals/add', $authCheck($app, $client), function () use ($app, $client) {
+
+		$typeResponse = json_decode($client->get("activity/type")->send()->getBody(true));
+	    $app->render('partials/goal_form.html.twig', array(
+	    	"section"=>"/goals",
+	    	"types" => $typeResponse->data,
+	    	"user" => $_SESSION['user']
+    	));
+	});
+
+	//list goals
+	$app->get('/goals/:id', $authCheck($app, $client), function ($id) use ($app, $client) {
+
+		$typeResponse = json_decode($client->get("activity/type")->send()->getBody(true));
+
+		$request = $client->get("goals/".$id);
+		$response = $request->send();
+		$response = json_decode($response->getBody(true));
+
+		// print_r($response); die();
+	    $app->render('partials/goal_form.html.twig', array(
+	    	"section"=>"goals",
+	    	"types" => $typeResponse->data,
+	    	"goal" => $response->data[0],
+	    	"user" => $_SESSION['user']
+    	));
+	});	
+
+	//add goal
+	$app->post('/goals', $authCheck($app, $client), function () use ($app, $client) {
+		$response = $client->post("goals", array(), $app->request->params())->send();
+		$response = json_decode($response->getBody(true));
+
+		if($response->status===true){
+			$app->flash("success", "Goal added");
+			$app->redirect("/goals");
+		} else {
+			$app->redirect("/goals/add");
+		}
+	});	
+
+	//update goal
+	$app->post('/goals/:id', $authCheck($app, $client), function ($id) use ($app, $client) {
+
+		$params = $app->request->params();
+
+		$response = $client->patch("goals/".$id, array(), $params)->send();
+		$response = json_decode($response->getBody(true));
+
+		if($response->status===true){
+			$app->flash("success", "Goal updated");
+			$app->redirect("/goals");
+		} else {
+			$app->flash("error", "Goal not updated check form");
+			$app->redirect("/goals/".$id);
+		}
+	});
 
 
 	/**
