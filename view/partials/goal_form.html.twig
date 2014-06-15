@@ -1,0 +1,60 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}{{parent()}} / activity / add goal{% endblock %}
+
+ {% block opengraph_meta %}
+  		{{parent()}}
+		<meta property="og:title" content="RishiSatsangi.com  / Art / {{data.name}}">
+		<meta property="og:description" content="{{data.description|striptags}}">
+  {% endblock %} 
+
+{% block body %}
+	{{ parent() }}
+	<!-- {{goal|print_r}} -->
+    <div class="clearfix"></div>
+
+		<div class="row" >
+
+				<form role="form" method="post" action="/goals{% if goal.id!="" %}/{{goal.id}}{% endif %}" >
+					<div class="form-group">
+						<label for="activity_type_id">Type</label>
+						{% for type in types %}
+							<div class="radio">
+								<label>
+								<input type="radio" name="activity_type_id" id="activity_type_id" value="{{ type.id }}" {% if goal.activity_type_id==type.id %}checked="checked"{% endif %}>
+								 <span class="label label-{%if type.polarity > 0%}success{%else%}danger{%endif%}">{{type.name}}</span> 
+								</label>
+							</div>
+						{% endfor %}
+					</div>
+
+					<div class="form-group ">
+						<label for="operator">Operator (&lt;, &gt;, =){{goal.operator}}{{type.operator}}</label>
+						<select class="form-control" name="operator" id="operator" >
+							<option value="<" {% if goal.operator=="<" %}selected="selected"{% endif %}>&lt;</option>
+							<option value=">" {% if goal.operator==">" %}selected="selected"{% endif %}>&gt;</option>
+							<option value="=" {% if goal.operator=="=" %}selected="selected"{% endif %}>=</option>
+						</select>
+					</div>
+
+					<div class="form-group ">
+						<label for="occurrence">Occurrence</label>
+						<input type="text" class="form-control" name="occurrence" id="occurrence" placeholder="3" value="{{goal.occurrence}}">
+					</div>
+
+
+					<div class="form-group ">
+						<label for="timeframe">Timeframe</label>
+						<select class="form-control" name="timeframe" id="timeframe" >
+							<option value="day" {% if goal.timeframe=="day" %}selected="selected"{% endif %}>per day</option>
+							<option value="week" {% if goal.timeframe=="week" %}selected="selected"{% endif %}>per week</option>
+						</select>
+					</div>					
+
+					<div class="form-group ">
+						<button type="submit" class="btn btn-default">Submit</button>
+					</div>
+				</form>
+		</div>
+{% endblock %}
+
