@@ -95,6 +95,14 @@
 				</table>
 
 
+				<h5>Goals</h5>
+				      	<div class="container">
+					 {% for goal in timeframe.goals %}
+							 {{goal.activity_type_id|activity_name_label(report.activity_types)|raw}} <strong>{{goal.operator}}</strong> {{goal.occurrence}} / {{goal.timeframe}} | {{goal.occurrence_count}}
+							 <br />
+					 {% endfor %}
+						</div>
+
 				<h5>Occurrence</h5>
 				      	<div class="container">
 					 {% for key,log in timeframe.occurrence %}
