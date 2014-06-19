@@ -1,0 +1,40 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}{{parent()}} / goal / list{% endblock %}
+
+ {% block opengraph_meta %}
+  		{{parent()}}
+		<meta property="og:title" content="RishiSatsangi.com  / Art / {{data.name}}">
+		<meta property="og:description" content="{{data.description|striptags}}">
+  {% endblock %} 
+
+{% block body %}
+	{{ parent() }}
+
+	<!-- {{goals|print_r}}-->
+    <div class="clearfix"></div>
+   <!--  <div class="row" >
+    	<a href="/goals/add" class="btn btn-primary">add</a>
+    	<br />
+    	<br />
+    </div> -->
+
+    <table class="table table-striped">
+	<tbody>
+		{% for goal in goals %}
+		<tr>
+			<!-- <td align="right">
+				<a class="btn btn-default btn-xs remove" href="/goals/{{goal.id}}">edit</a>
+			</td> -->
+			<td align="left">
+				<span class="label label-{%if goal.polarity > 0%}success{%else%}danger{%endif%}">{{goal.name}}</span>  {% if goal.operator=="<" %}<span class="glyphicon glyphicon-chevron-left"></span>{% elseif goal.operator=="=" %}<span class="glyphicon glyphicon-play"></span>{% elseif goal.operator==">" %}<span class="glyphicon glyphicon-chevron-right"></span>{% endif %} <strong>{{goal.occurrence}}</strong> / <strong>{{goal.timeframe}}</strong>
+				<br />
+			</td>
+			<td>{{goal.logs|length}}</td>
+			<td><a type="button" class="btn btn-primary" href="/activity/add/type/{{goal.activity_type_id}}">track</a></td>
+		</tr>
+		{% endfor %}
+ 	<tbody>
+	</table>
+{% endblock %}
+
