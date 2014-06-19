@@ -20,7 +20,7 @@
 						{% for type in types %}
 							<div class="radio">
 								<label>
-								<input type="radio" name="activity_type_id" id="activity_type_id" value="{{ type.id }}" checked>
+								<input type="radio" name="activity_type_id" id="activity_type_id" value="{{ type.id }}" {% if(activity_type_id==type.id) %}checked="checked"{% endif %} >
 								 <span class="label label-{%if type.polarity > 0%}success{%else%}danger{%endif%}">{{type.name}}</span> 
 								</label>
 							</div>
@@ -55,6 +55,16 @@
 							});
 							$('#date_added').focus();
 							$('#activity_type_id').focus();
+							// console.log($('input[name=activity_type_id]'));
+							$('input[name=activity_type_id]').click(function(){
+								// console.log("here");
+								$('input[name=activity_type_id]').parent().parent().fadeTo( 300 , 0.5);
+								$(this).parent().parent().fadeTo( 300 , 1);
+							});
+
+							$('input[name=activity_type_id][checked=checked]').trigger('click');
+							// console.log($('input[name=activity_type_id][checked=checked]'));
+
 						});
 					</script>
 				</form>
