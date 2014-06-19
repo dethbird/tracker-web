@@ -13,6 +13,7 @@
 	ini_set('error_reporting', E_ALL);
 	ini_set('display_errors', 1);
 	define("APPLICATION_PATH", __DIR__ . "/..");
+	// date_default_timezone_set('America/New_York');
 	date_default_timezone_set('America/New_York');
 
 
@@ -154,7 +155,8 @@
 	*/
 
 	$app->get('/', $authCheck($app, $client), function () use ($app) {
-	    $app->redirect('/activity/add');
+	    // $app->redirect('/activity/add');
+	    $app->redirect('/goals/activity');
 	});
 
 
@@ -191,6 +193,18 @@
 	    	"section"=>$app->environment()->offsetGet("PATH_INFO"),
 	    	"types" => $typeResponse->data,
 	    	"user" => $_SESSION['user']
+    	));
+	});
+
+		//add new log entry form
+	$app->get('/activity/add/type/:id', $authCheck($app, $client), function ($id) use ($app, $client) {
+		// var_dump($client);die();
+		$typeResponse = json_decode($client->get("activity/type")->send()->getBody(true));
+	    $app->render('partials/activity_form.html.twig', array(
+	    	"section"=>"/activity/add",
+	    	"types" => $typeResponse->data,
+	    	"user" => $_SESSION['user'],
+	    	"activity_type_id" => $id
     	));
 	});
 
@@ -320,6 +334,54 @@
 	    	"user" => $_SESSION['user']
     	));
 	});
+
+	//list goals with button to add activity to that goal
+	$app->get('/goals/activity', $authCheck($app, $client), function () use ($app, $client) {
+
+		// var_dump(time()); die();
+
+
+		$response = json_decode($client->get("goals")->send()->getBody(true));
+
+		//get goal activity for last week
+		$request = $client->get("/activity");
+		$request->getQuery()->set('start_date', strtotime('monday this week'));
+		$activityResponse = json_decode($request->send()->getBody(true));
+
+		// correlate
+		$goals = array();
+		// echo "<pre>";
+
+		// print_r($response->data); die();
+		foreach ($response->data as $i => $goal) {
+			$goal->logs = array();
+			foreach($activityResponse->data as $activity){
+				if($goal->timeframe=="week" 
+					&& $goal->activity_type_id === $activity->activity_type_id
+				) {
+					$goal->logs[] = $activity;
+				} elseif($goal->timeframe=="day"
+					&& $goal->activity_type_id === $activity->activity_type_id
+					&& strtotime($activity->date_added) > strtotime("today")
+				) {
+					$goal->logs[] = $activity;
+
+				}
+			}
+		}
+
+		// print_r($response->data);
+
+		// echo "</pre>";
+		// die();
+
+
+	    $app->render('partials/goal_activity.html.twig', array(
+	    	"section"=>"/goals",
+	    	"goals" => $response->data,
+	    	"user" => $_SESSION['user']
+    	));
+	});	
 
 	//list goals
 	$app->get('/goals/:id', $authCheck($app, $client), function ($id) use ($app, $client) {
