@@ -30,7 +30,16 @@
 				<span class="label label-{%if goal.polarity > 0%}success{%else%}danger{%endif%}">{{goal.name}}</span>  {% if goal.operator=="<" %}<span class="glyphicon glyphicon-chevron-left"></span>{% elseif goal.operator=="=" %}<span class="glyphicon glyphicon-play"></span>{% elseif goal.operator==">" %}<span class="glyphicon glyphicon-chevron-right"></span>{% endif %} <strong>{{goal.occurrence}}</strong> / <strong>{{goal.timeframe}}</strong>
 				<br />
 			</td>
-			<td>{{goal.logs|length}}</td>
+			<td>
+				<span
+					{% if (goal.operator=="<") %}{% if (goal.logs|length > goal.occurrence) %}class="label label-danger"{% endif %}{% endif %}
+					{% if (goal.operator=="<") %}{% if (goal.logs|length < goal.occurrence) %}class="label label-success"{% endif %}{% endif %}
+					{% if (goal.operator==">") %}{% if (goal.logs|length > goal.occurrence) %}class="label label-success"{% endif %}{% endif %}
+					{% if (goal.operator=="=") %}{% if (goal.logs|length >= goal.occurrence) %}class="label label-success"{% endif %}{% endif %}
+					>
+					{{goal.logs|length}}
+				</span>
+			</td>
 			<td><a type="button" class="btn btn-primary" href="/activity/add/type/{{goal.activity_type_id}}">track</a></td>
 		</tr>
 		{% endfor %}
