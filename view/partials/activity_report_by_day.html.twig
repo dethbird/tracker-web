@@ -16,75 +16,40 @@
 {{report|print_r}}
 </pre> -->
 		<h1>Report by Day</h1>
-		<div class="panel panel-default">
-			<div class="panel-body">
-				<strong>Summary</strong><br />
-				{{report.date_range.start_date.date|date_format("l F j, Y")}} - {{report.date_range.end_date.date|date_format("l F j, Y")}}
-				<br />
-				<table class="table table-striped table-condensed table-hover">
-				 	<thead>
-			        <tr>
-			          <th>&nbsp</th>
-			          <th>Quantity</th>
-			          <th>Occurrence</th>
-			        </tr>
-			      </thead>
-			      <tbody>
-					{% for key, type in report.activity_types %}
-						
-						<tr>
-							 <td>
-							 	 <small>{{key|activity_name_label(report.activity_types)|raw}}</small>
-							 </td>
-							 <td>
-							 	<span class="badge">{{type.quantity}}</span>
-							 </td>
-							 <td>
-							 	{{type.occurrence}}
-							 </td>
-						</tr>
-					{% endfor %}
-			 	   <tbody>
-				</table>
-				{% for polarity,count in report.polarity %}
-						 <span class="label label-{%if polarity=="good" %}success{%else%}danger{%endif%}">{{polarity}}</span> <span class="badge">{{count}}</span>
-						 <br />
-				 {% endfor %}
-			</div>
-		</div>
+
 
 		{% for key, timeframe in report.timeframes %}
 		
 			<div class="panel panel-default">
 				<div class="panel-body">
-			 		<h3>{{key|date_format("l F j, Y")}}</h3>
+			 		<h3><span class="glyphicon glyphicon-calendar"></span> {{key|date_format("l F j, Y")}}</h3>
 				</div>
 			</div>
 			<div class="row" >
 				 <table class="table table-striped table-condensed table-hover">
 				 	<thead>
 			        <tr>
-			          <th>Quantity</th>
-			          <th>Type</th>
-			          <th>Time</th>
-			          <th>Note</th>
+			          <th><span class="glyphicon glyphicon-tag"></span> <!-- Type --></th>
+			          <th><span class="glyphicon glyphicon-time"></span> <!-- Time --></th>
+			          <th><span class="glyphicon glyphicon-comment"></span> <!-- Note --></th>
+			          <th>qty</th>
 			          <th>&nbsp;</th>
 			        </tr>
 			      </thead>
 			      <tbody>
 					 {% for log in timeframe.logs %}
 				      	<tr>
-							 <td class="quantity">
-							 	<span class="badge">{{log.quantity}}</span>
-							 </td>
 							 <td class="name">
 							 	{{log.activity_type_id|activity_name_label(report.activity_types)|raw}}
 							 </td>
 							 <td class="time">
 							 	 <small>{{log.date_added.date|date_format("g:i a")}}</small>
 							 </td>
-							 <td class="note">
+							 <td class="name">
 							 	  <small>{{log.note}}</small>
+							 </td>
+							 <td class="name">
+							 	<span class="badge">{{log.quantity}}</span>
 							 </td>
 							 <td class="time">
 							 	  <a class="btn btn-xs remove" data-id="{{log.id}}">remove</a>
@@ -132,6 +97,43 @@
 			<hr />
 			<br /><br />
 		{% endfor %}
+
+		<div class="panel panel-default">
+			<div class="panel-body">
+				<strong>Summary</strong><br />
+				{{report.date_range.start_date.date|date_format("l F j, Y")}} - {{report.date_range.end_date.date|date_format("l F j, Y")}}
+				<br />
+				<table class="table table-striped table-condensed table-hover">
+				 	<thead>
+			        <tr>
+			          <th>&nbsp</th>
+			          <th>Quantity</th>
+			          <th>Occurrence</th>
+			        </tr>
+			      </thead>
+			      <tbody>
+					{% for key, type in report.activity_types %}
+						
+						<tr>
+							 <td>
+							 	 <small>{{key|activity_name_label(report.activity_types)|raw}}</small>
+							 </td>
+							 <td>
+							 	<span class="badge">{{type.quantity}}</span>
+							 </td>
+							 <td>
+							 	{{type.occurrence}}
+							 </td>
+						</tr>
+					{% endfor %}
+			 	   <tbody>
+				</table>
+				{% for polarity,count in report.polarity %}
+						 <span class="label label-{%if polarity=="good" %}success{%else%}danger{%endif%}">{{polarity}}</span> <span class="badge">{{count}}</span>
+						 <br />
+				 {% endfor %}
+			</div>
+		</div>
 
 		<script>
 			$(document).ready(function(){
