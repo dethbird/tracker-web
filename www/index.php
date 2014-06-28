@@ -394,7 +394,7 @@
 
 		// print_r($response); die();
 	    $app->render('partials/goal_form.html.twig', array(
-	    	"section"=>"goals",
+	    	"section"=>"/goals",
 	    	"types" => $typeResponse->data,
 	    	"goal" => $response->data[0],
 	    	"user" => $_SESSION['user']
@@ -447,7 +447,7 @@
 		$response = json_decode($response->getBody(true), true);
 
 	    $app->render('partials/activity_report_by_day.html.twig', array(
-	    	"section"=>$app->environment()->offsetGet("PATH_INFO"),
+	    	"section"=>"/reports",
 	    	"report"=>$response['data'],
 	    	"user" => $_SESSION['user']
     	));
