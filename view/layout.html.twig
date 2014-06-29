@@ -84,28 +84,28 @@
   <div class="collapse navbar-collapse" id="gallery-navbar-collapse">
     <ul class="nav navbar-nav">
         <li class="{%if section=="/goals" %}active{%endif%} dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Goals <span class="caret"></span></a>
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-bookmark"></span> Goals<span class="caret"></span></a>
           <ul class="dropdown-menu" role="menu">
-            <li><a href="/goals/activity">Track</a></li>
-            <li><a href="/goals">List</a></li>
-            <li><a href="/goals/add">New</a></li>
+            <li><a href="/goals/activity"><span class="glyphicon glyphicon-time"></span> Track</a></li>
+            <li><a href="/goals"><span class="glyphicon glyphicon-list"></span> View</a></li>
+            <li><a href="/goals/add"><span class="glyphicon glyphicon-bookmark"></span> New</a></li>
           </ul>
 
         </li>
-        <li class="{%if section=="/activity/type" %}active{%endif%} dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Activities <span class="caret"></span></a>
+        <li class="{%if section=="/activity/type" %}active{%endif%} dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-tag"></span> Activities<span class="caret"></span></a>
           <ul class="dropdown-menu" role="menu">
-            <li><a href="/activity/add">Track</a></li>
-            <li><a href="/activity/type">List</a></li>
-            <li><a href="/activity/type/add">New</a></li>
+            <li><a href="/activity/add"><span class="glyphicon glyphicon-time"></span> Track</a></li>
+            <li><a href="/activity/type"><span class="glyphicon glyphicon-list"></span> View</a></li>
+            <li><a href="/activity/type/add"><span class="glyphicon glyphicon-tag"></span> New</a></li>
           </ul>
 
         </li>
         <!-- <li {%if section=="/activity/add" %}class="active"{%endif%}><a href="/activity/add">Track</a></li> -->
-        <li class="{%if section=="/reports" %}active{%endif%} dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Reports <span class="caret"></span></a>
+        <li class="{%if section=="/reports" %}active{%endif%} dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-stats"></span> Reports<span class="caret"></span></a>
           <ul class="dropdown-menu" role="menu">
-            <li><a href="/activity/report/by/day">Activity By Day</a></li>
-            <li><a href="/activity/report/by/week">Activity By Week</a></li>
-            <li><a href="/goal/report/by/day">Goals By Day</a></li>
+            <li><a href="/activity/report/by/day"><span class="glyphicon glyphicon-stats"></span> Activity By Day</a></li>
+            <li><a href="/activity/report/by/week"><span class="glyphicon glyphicon-ban-circle"></span> Activity By Week</a></li>
+            <li><a href="/goal/report/by/day"><span class="glyphicon glyphicon-ban-circle"></span> Goals By Day</a></li>
           </ul>
 
         </li>
