@@ -64,7 +64,18 @@
 				<h4>Daily Goals</h4>
 				      	<div class="container">
 					 {% for goal in day.goals.day %}
-							 {{goal.activity_type_id|activity_name_label(report.activity_types)|raw}} <strong>{{goal.operator}}</strong> {{goal.occurrence}} / {{goal.day}} | {{goal.occurrence_count}}
+							 {{goal.activity_type_id|activity_name_label(report.activity_types)|raw}} 
+							 {% if goal.operator=="<" %}<span class="glyphicon glyphicon-chevron-left"></span>{% elseif goal.operator=="=" %}<span class="glyphicon glyphicon-play"></span>{% elseif goal.operator==">" %}<span class="glyphicon glyphicon-chevron-right"></span>{% endif %} <strong>{{goal.occurrence}}</strong> / <strong>{{goal.timeframe}}</strong>
+							 <!-- <strong>{{goal.operator}}</strong> {{goal.occurrence}} / {{goal.day}} | {{goal.occurrence_count}} -->
+
+							 <span
+								{% if (goal.operator=="<") %}{% if (goal.occurrence_count > goal.occurrence) %}class="label label-danger"{% endif %}{% endif %}
+								{% if (goal.operator=="<") %}{% if (goal.occurrence_count < goal.occurrence) %}class="label label-success"{% endif %}{% endif %}
+								{% if (goal.operator==">") %}{% if (goal.occurrence_count > goal.occurrence) %}class="label label-success"{% endif %}{% endif %}
+								{% if (goal.operator=="=") %}{% if (goal.occurrence_count >= goal.occurrence) %}class="label label-success"{% endif %}{% endif %}
+								>
+								{{goal.occurrence_count}}
+							</span>
 							 <br />
 					 {% endfor %}
 						</div>
@@ -72,7 +83,16 @@
 				<h4>Weekly Goals</h4>
 				      	<div class="container">
 					 {% for goal in day.goals.week %}
-							 {{goal.activity_type_id|activity_name_label(report.activity_types)|raw}} <strong>{{goal.operator}}</strong> {{goal.occurrence}} / {{goal.day}} | {{goal.occurrence_count}}
+							 {{goal.activity_type_id|activity_name_label(report.activity_types)|raw}} 
+							 {% if goal.operator=="<" %}<span class="glyphicon glyphicon-chevron-left"></span>{% elseif goal.operator=="=" %}<span class="glyphicon glyphicon-play"></span>{% elseif goal.operator==">" %}<span class="glyphicon glyphicon-chevron-right"></span>{% endif %} <strong>{{goal.occurrence}}</strong> / <strong>{{goal.timeframe}}</strong>
+							 
+							 <span
+								{% if (goal.operator=="<") %}{% if (goal.occurrence_count > goal.occurrence) %}class="label label-danger"{% endif %}{% endif %}
+								{% if (goal.operator=="<") %}{% if (goal.occurrence_count < goal.occurrence) %}class="label label-success"{% endif %}{% endif %}
+								{% if (goal.operator==">") %}{% if (goal.occurrence_count > goal.occurrence) %}class="label label-success"{% endif %}{% endif %}
+								{% if (goal.operator=="=") %}{% if (goal.occurrence_count >= goal.occurrence) %}class="label label-success"{% endif %}{% endif %}
+								>
+								{{goal.occurrence_count}}
 							 <br />
 					 {% endfor %}
 						</div>
