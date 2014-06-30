@@ -196,6 +196,8 @@
     	));
 	});
 
+
+
 		//add new log entry form
 	$app->get('/activity/add/type/:id', $authCheck($app, $client), function ($id) use ($app, $client) {
 		// var_dump($client);die();
@@ -209,7 +211,7 @@
 	});
 
 	// create an activity
-	$app->post('/activity/add', $authCheck($app, $client), function () use ($app, $client) {
+	$app->post('/activity', $authCheck($app, $client), function () use ($app, $client) {
 
 		$response = $client->post("activity", array(), $app->request->params())->send();
 		$response = json_decode($response->getBody(true));
@@ -222,6 +224,8 @@
 		}
 
 	});
+
+
 
 	// delete an activity
 	$app->post('/activity/delete', $authCheck($app, $client), function () use ($app, $client) {
@@ -307,6 +311,40 @@
 		}
 	});
 
+	//edit log entry form
+	$app->get('/activity/:id', $authCheck($app, $client), function ($id) use ($app, $client) {
+		// var_dump($client);die();
+		$response = json_decode($client->get("activity/".$id)->send()->getBody(true));
+		// var_dump($response); die();
+		$activity = $response->data[0];
+		//
+		// var_dump($response);die();
+
+		$typeResponse = json_decode($client->get("activity/type")->send()->getBody(true));
+	    $app->render('partials/activity_form.html.twig', array(
+	    	"section"=>$app->environment()->offsetGet("PATH_INFO"),
+	    	"activity" => $response->data[0],
+	    	"types" => $typeResponse->data,
+	    	"user" => $_SESSION['user']
+    	));
+	});
+
+	// update an activity
+	$app->post('/activity/:id', $authCheck($app, $client), function ($id) use ($app, $client) {
+
+		$response = $client->patch("activity/".$id, array(), $app->request->params())->send();
+		// var_dump($response->getBody(true)); die();
+		$response = json_decode($response->getBody(true));
+
+		if($response->status===true){
+			$app->flash("success", "Activity updated");
+			$app->redirect("/activity/report/by/day");
+		} else {
+			$app->redirect("/activity/add");
+		}
+
+	});
+
 
 
 	/**
@@ -345,14 +383,17 @@
 
 		//get goal activity for last week
 		$request = $client->get("/activity");
-		$request->getQuery()->set('start_date', strtotime('monday this week'));
+		$request->getQuery()->set('start_date', strtotime('monday last week'));
+
+		// var_dump($request->send()); die();
+		// var_dump($request->send()->getBody(true)); die();
 		$activityResponse = json_decode($request->send()->getBody(true));
 
 		// correlate
 		$goals = array();
 		// echo "<pre>";
 
-		// print_r($response->data); die();
+		// print_r($activityResponse->data); die();
 		foreach ($response->data as $i => $goal) {
 			$goal->logs = array();
 			foreach($activityResponse->data as $activity){
@@ -360,17 +401,20 @@
 					&& $goal->activity_type_id === $activity->activity_type_id
 				) {
 					$goal->logs[] = $activity;
+					// var_dump($goal);
 				} elseif($goal->timeframe=="day"
 					&& $goal->activity_type_id === $activity->activity_type_id
-					&& strtotime($activity->date_added) > strtotime("today")
+					&& strtotime($activity->date_added->date) > strtotime("today")
 				) {
 					$goal->logs[] = $activity;
+					// var_dump($goal);
+
 
 				}
 			}
 		}
 
-		// print_r($response->data);
+		// print_r($activityResponse);
 
 		// echo "</pre>";
 		// die();

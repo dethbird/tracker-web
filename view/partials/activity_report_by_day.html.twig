@@ -52,7 +52,8 @@
 							 	<span class="badge">{{log.quantity}}</span>
 							 </td>
 							 <td class="time">
-							 	  <a class="btn btn-xs remove" data-id="{{log.id}}">remove</a>
+							 	  <button type="button" class="btn btn-info btn-xs edit" data-id="{{log.id}}"><!-- <span class="glyphicon glyphicon-pencil"></span> -->edit</button>
+							 	  <button type="button" class="btn btn-default btn-xs remove" data-id="{{log.id}}"><!-- <span class="glyphicon glyphicon-remove"></span> -->remove</button>
 							 </td>
 						</tr>
 					 {% endfor %}
@@ -138,12 +139,15 @@
 		<script>
 			$(document).ready(function(){
 				$('.remove').click(function(){
-					// console.log($(this).attr('data-id'));
 					var del = confirm("Really delete this activity?");
 					if(del===true){
 						$('#delete_activity_form #id').val($(this).attr('data-id'));
 						$('#delete_activity_form').submit();
 					}
+				});
+
+				$('.edit').click(function(){
+					document.location = "/activity/" + $(this).attr('data-id');
 				});
 			});
 		</script>

@@ -14,13 +14,13 @@
 
 		<div class="row" >
 
-				<form role="form" method="post" action="/activity/add">
+				<form role="form" method="post" action="/activity{% if activity.id!='' %}/{{activity.id}}{% endif %}">
 					<div class="form-group">
 						<label for="activity_type_id">Type</label>
 						{% for type in types %}
 							<div class="radio">
 								<label>
-								<input type="radio" name="activity_type_id" id="activity_type_id" value="{{ type.id }}" {% if(activity_type_id==type.id) %}checked="checked"{% endif %} >
+								<input type="radio" name="activity_type_id" id="activity_type_id" value="{{ type.id }}" {% if(activity_type_id==type.id) %}checked="checked"{% endif %} {% if(activity.activity_type_id==type.id) %}checked="checked"{% endif %}>
 								 <span class="label label-{%if type.polarity > 0%}success{%else%}danger{%endif%}">{{type.name}}</span> 
 								</label>
 							</div>
@@ -28,19 +28,19 @@
 					</div>
 					<div class="form-group ">
 						<label for="quantity">Quantity</label>
-						<input type="text" class="form-control" name="quantity" id="quantity" placeholder="1" value="1">
+						<input type="text" class="form-control" name="quantity" id="quantity" placeholder="1" value="{%if activity.quantity != "" %}{{activity.quantity}}{%else%}1{%endif%}">
 					</div>
 
 
 					<div class="form-group ">
 						<label for="date_added">When</label>
-						<input type="text" class="form-control" name="date_added" id="date_added">
+						<input type="text" class="form-control" name="date_added" id="date_added" {% if activity.date_added != "" %}data-date="{{activity.date_added.date|date_format('m/d/Y g:i A')}}"{% endif %}>
 					</div>
 
 
 					<div class="form-group ">
 						<label for="note">Note</label>
-						<textarea class="form-control" name="note" id="note"></textarea>
+						<textarea class="form-control" name="note" id="note">{{activity.note|raw}}</textarea>
 					</div>
 				  
 					<div class="form-group ">
@@ -50,20 +50,25 @@
 					<script>
 						$(document).ready(function(){
 							var d = new Date();
+
 							$('#date_added').datetimepicker({
 								defaultDate: d.getTime()
 							});
+
 							$('#date_added').focus();
 							$('#activity_type_id').focus();
-							// console.log($('input[name=activity_type_id]'));
+
+							// console.log($('#date_added').attr('data-date'));
+							if($('#date_added').attr('data-date')!=undefined){
+								$('#date_added').data("DateTimePicker").setDate($('#date_added').attr('data-date'));
+							}
+
 							$('input[name=activity_type_id]').click(function(){
-								// console.log("here");
 								$('input[name=activity_type_id]').parent().parent().fadeTo( 300 , 0.5);
 								$(this).parent().parent().fadeTo( 300 , 1);
 							});
 
 							$('input[name=activity_type_id][checked=checked]').trigger('click');
-							// console.log($('input[name=activity_type_id][checked=checked]'));
 
 						});
 					</script>
