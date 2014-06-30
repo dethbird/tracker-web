@@ -18,7 +18,7 @@
 		<h1>Report by Day</h1>
 
 
-		{% for key, timeframe in report.timeframes %}
+		{% for key, day in report.days %}
 		
 			<div class="panel panel-default">
 				<div class="panel-body">
@@ -37,7 +37,7 @@
 			        </tr>
 			      </thead>
 			      <tbody>
-					 {% for log in timeframe.logs %}
+					 {% for log in day.logs %}
 				      	<tr>
 							 <td class="name">
 							 	{{log.activity_type_id|activity_name_label(report.activity_types)|raw}}
@@ -61,17 +61,25 @@
 				</table>
 
 
-				<h5>Goals</h5>
+				<h4>Daily Goals</h4>
 				      	<div class="container">
-					 {% for goal in timeframe.goals %}
-							 {{goal.activity_type_id|activity_name_label(report.activity_types)|raw}} <strong>{{goal.operator}}</strong> {{goal.occurrence}} / {{goal.timeframe}} | {{goal.occurrence_count}}
+					 {% for goal in day.goals.day %}
+							 {{goal.activity_type_id|activity_name_label(report.activity_types)|raw}} <strong>{{goal.operator}}</strong> {{goal.occurrence}} / {{goal.day}} | {{goal.occurrence_count}}
 							 <br />
 					 {% endfor %}
 						</div>
 
-				<h5>Occurrence</h5>
+				<h4>Weekly Goals</h4>
 				      	<div class="container">
-					 {% for key,log in timeframe.occurrence %}
+					 {% for goal in day.goals.week %}
+							 {{goal.activity_type_id|activity_name_label(report.activity_types)|raw}} <strong>{{goal.operator}}</strong> {{goal.occurrence}} / {{goal.day}} | {{goal.occurrence_count}}
+							 <br />
+					 {% endfor %}
+						</div>
+
+				<!-- <h5>Occurrence</h5>
+				      	<div class="container">
+					 {% for key,log in day.occurrence %}
 							 {{key|activity_name_label(report.activity_types)|raw}} <span class="badge">{{log}}</span>
 							 <br />
 					 {% endfor %}
@@ -80,7 +88,7 @@
 
 				<h5>Quantity</h5>
 				      	<div class="container">
-					 {% for key,log in timeframe.quantity %}
+					 {% for key,log in day.quantity %}
 							 {{key|activity_name_label(report.activity_types)|raw}} <span class="badge">{{log}}</span>
 							 <br />
 					 {% endfor %}
@@ -89,11 +97,11 @@
 
 				<h5>Polarity</h5>
 				      	<div class="container">
-					 {% for key,log in timeframe.polarity %}
+					 {% for key,log in day.polarity %}
 							 <span class="label label-{%if key=="good" %}success{%else%}danger{%endif%}">{{key}}</span> <span class="badge">{{log}}</span>
 							 <br />
 					 {% endfor %}
-						</div>				
+						</div>				 -->
 			</div>
 			<hr />
 			<br /><br />
