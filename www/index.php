@@ -383,7 +383,10 @@
 
 		//get goal activity for last week
 		$request = $client->get("/activity");
-		$request->getQuery()->set('start_date', strtotime('monday last week'));
+		$request->getQuery()->set('start_date', strtotime(date("Y-m-d")));
+
+		// var_dump(date("Y-m-d h:i A", strtotime('monday this week'))); die();
+		// var_dump(strtotime('monday this week')); die();
 
 		// var_dump($request->send()); die();
 		// var_dump($request->send()->getBody(true)); die();
@@ -394,28 +397,53 @@
 		// echo "<pre>";
 
 		// print_r($activityResponse->data); die();
-		foreach ($response->data as $i => $goal) {
-			$goal->logs = array();
-			foreach($activityResponse->data as $activity){
-				if($goal->timeframe=="week" 
-					&& $goal->activity_type_id === $activity->activity_type_id
-				) {
-					$goal->logs[] = $activity;
-					// var_dump($goal);
-				} elseif($goal->timeframe=="day"
-					&& $goal->activity_type_id === $activity->activity_type_id
-					&& strtotime($activity->date_added->date) > strtotime("today")
-				) {
-					$goal->logs[] = $activity;
-					// var_dump($goal);
+		// foreach ($response->data as $i => $goal) {
+		// 	$goal->logs = array();
+		// 	foreach($activityResponse->data as $activity){
+		// 		if($goal->timeframe=="week" 
+		// 			&& $goal->activity_type_id === $activity->activity_type_id
+		// 		) {
+		// 			$goal->logs[] = $activity;
+		// 			// var_dump($goal);
+		// 		} elseif($goal->timeframe=="day"
+		// 			&& $goal->activity_type_id === $activity->activity_type_id
+		// 			&& strtotime($activity->date_added->date) > strtotime("today")
+		// 		) {
+		// 			$goal->logs[] = $activity;
+		// 			// var_dump($goal);
 
 
-				}
-			}
-		}
+		// 		}
+		// 	}
+		// }
 
 		// print_r($activityResponse);
 
+		// echo "</pre>";
+		// die();
+		// echo "<pre>";
+		$today = null;
+		foreach ($response->data as $i => $goal) {
+			$goal->logs = array();
+			foreach($activityResponse->data as $activity){
+				if(is_null($today)){
+					$today = date("Y-m-d",strtotime($activity->date_added->date));
+				}
+				if($goal->activity_type_id === $activity->activity_type_id){
+					if($goal->timeframe=="week"){
+						$goal->logs[] = $activity;
+					} else if($goal->timeframe=="day"){
+
+							// var_dump(date("Y-m-d",strtotime($activity->date_added->date)));
+							// var_dump($activity);
+							// var_dump(date("Y-m-d"));
+						if(date("Y-m-d",strtotime($activity->date_added->date)) == $today){
+							$goal->logs[] = $activity;
+						}
+					}
+				}
+			}
+		}
 		// echo "</pre>";
 		// die();
 
