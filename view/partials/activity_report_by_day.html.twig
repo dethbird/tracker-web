@@ -40,8 +40,8 @@
 					 {% for log in day.logs %}
 				      	<tr>
 							 <td class="name">
-							 	{{log.activity_type_id|activity_name_label(report.activity_types)|raw}}
-							 </td>
+							 	{{log.activity_type_id|activity_name_label(report.activity_types, log.has_goal)|raw}}
+							 </td> 
 							 <td class="time">
 							 	 <small>{{log.date_added.date|date_format("g:i a")}}</small>
 							 </td>

@@ -84,10 +84,16 @@
 	    }
 
 
-	    public function activity_name_label($activity_type_id, $acivity_types)
+	    public function activity_name_label($activity_type_id, $acivity_types, $has_goal=null)
 	    {
 	    	$activity_type = $acivity_types[$activity_type_id];
-	    	return '<span class="label label-'.($activity_type['polarity']>0?"success":"danger").'">'.$activity_type['name'].'</span>';
+	    	return '<span class="label label-'.
+	    	($activity_type['polarity']>0?"success":"danger").
+	    	'" >'.
+	    	$activity_type['name'].
+
+	    	($has_goal=="Y" ? ' <span class="glyphicon glyphicon-'.($activity_type['polarity']>0?"star":"star-empty").'"></span>' : null).
+	    	'</span>';
 	    }
 
 	}
@@ -376,52 +382,17 @@
 	//list goals with button to add activity to that goal
 	$app->get('/goals/activity', $authCheck($app, $client), function () use ($app, $client) {
 
-		// var_dump(time()); die();
-
-
 		$response = json_decode($client->get("goals")->send()->getBody(true));
 
 		//get goal activity for last week
 		$request = $client->get("/activity");
 		$request->getQuery()->set('start_date', strtotime(date("Y-m-d")));
 
-		// var_dump(date("Y-m-d h:i A", strtotime('monday this week'))); die();
-		// var_dump(strtotime('monday this week')); die();
-
-		// var_dump($request->send()); die();
-		// var_dump($request->send()->getBody(true)); die();
 		$activityResponse = json_decode($request->send()->getBody(true));
 
 		// correlate
 		$goals = array();
-		// echo "<pre>";
 
-		// print_r($activityResponse->data); die();
-		// foreach ($response->data as $i => $goal) {
-		// 	$goal->logs = array();
-		// 	foreach($activityResponse->data as $activity){
-		// 		if($goal->timeframe=="week" 
-		// 			&& $goal->activity_type_id === $activity->activity_type_id
-		// 		) {
-		// 			$goal->logs[] = $activity;
-		// 			// var_dump($goal);
-		// 		} elseif($goal->timeframe=="day"
-		// 			&& $goal->activity_type_id === $activity->activity_type_id
-		// 			&& strtotime($activity->date_added->date) > strtotime("today")
-		// 		) {
-		// 			$goal->logs[] = $activity;
-		// 			// var_dump($goal);
-
-
-		// 		}
-		// 	}
-		// }
-
-		// print_r($activityResponse);
-
-		// echo "</pre>";
-		// die();
-		// echo "<pre>";
 		$today = null;
 		foreach ($response->data as $i => $goal) {
 			$goal->logs = array();
@@ -433,10 +404,6 @@
 					if($goal->timeframe=="week"){
 						$goal->logs[] = $activity;
 					} else if($goal->timeframe=="day"){
-
-							// var_dump(date("Y-m-d",strtotime($activity->date_added->date)));
-							// var_dump($activity);
-							// var_dump(date("Y-m-d"));
 						if(date("Y-m-d",strtotime($activity->date_added->date)) == $today){
 							$goal->logs[] = $activity;
 						}
@@ -444,9 +411,6 @@
 				}
 			}
 		}
-		// echo "</pre>";
-		// die();
-
 
 	    $app->render('partials/goal_activity.html.twig', array(
 	    	"section"=>"/goals",
