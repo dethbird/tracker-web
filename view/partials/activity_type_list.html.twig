@@ -21,11 +21,12 @@
 	<tbody>
 		{% for type in types %}
 		<tr>
-			<td align="right">
-				<a class="btn btn-default btn-xs remove" href="/activity/type/{{type.id}}">edit</a>
-			</td>
 			<td align="left">
 				<span class="label label-{%if type.polarity > 0%}success{%else%}danger{%endif%}">{{type.name}}</span> 
+			</td>
+			<td align="right">
+				<a class="btn btn-default btn-xs remove" href="/activity/type/{{type.id}}">edit</a>
+				<a class="btn btn-primary btn-xs remove" href="/activity/add/type/{{type.id}}">track</a>
 			</td>
 		</tr>
 		{% endfor %}

@@ -231,8 +231,6 @@
 
 	});
 
-
-
 	// delete an activity
 	$app->post('/activity/delete', $authCheck($app, $client), function () use ($app, $client) {
 
