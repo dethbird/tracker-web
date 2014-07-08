@@ -196,7 +196,7 @@
 		// var_dump($client);die();
 		$typeResponse = json_decode($client->get("activity/type")->send()->getBody(true));
 	    $app->render('partials/activity_form.html.twig', array(
-	    	"section"=>$app->environment()->offsetGet("PATH_INFO"),
+	    	"section"=>"/activity",
 	    	"types" => $typeResponse->data,
 	    	"user" => $_SESSION['user']
     	));
@@ -209,7 +209,7 @@
 		// var_dump($client);die();
 		$typeResponse = json_decode($client->get("activity/type")->send()->getBody(true));
 	    $app->render('partials/activity_form.html.twig', array(
-	    	"section"=>"/activity/add",
+	    	"section"=>"/activity",
 	    	"types" => $typeResponse->data,
 	    	"user" => $_SESSION['user'],
 	    	"activity_type_id" => $id
@@ -254,7 +254,7 @@
 		$typeResponse = json_decode($client->get("activity/type")->send()->getBody(true));
 		// print_R($typeResponse);
 	    $app->render('partials/activity_type_list.html.twig', array(
-	    	"section"=>$app->environment()->offsetGet("PATH_INFO"),
+	    	"section"=>"/activity",
 	    	"types" => $typeResponse->data,
 	    	"user" => $_SESSION['user']
     	));
@@ -264,7 +264,7 @@
 	$app->get('/activity/type/add', $authCheck($app, $client), function () use ($app, $client) {
 
 	    $app->render('partials/activity_type_form.html.twig', array(
-	    	"section"=>"/activity/type",
+	    	"section"=>"/activity",
 	    	"user" => $_SESSION['user']
     	));
 	});
@@ -279,7 +279,7 @@
 		$response = json_decode($response->getBody(true));
 
 	    $app->render('partials/activity_type_form.html.twig', array(
-	    	"section"=>"/activity/type",
+	    	"section"=>"/activity",
 	    	"type" => $response->data[0],
 	    	"user" => $_SESSION['user']
     	));
@@ -326,7 +326,7 @@
 
 		$typeResponse = json_decode($client->get("activity/type")->send()->getBody(true));
 	    $app->render('partials/activity_form.html.twig', array(
-	    	"section"=>$app->environment()->offsetGet("PATH_INFO"),
+	    	"section"=>"/activity",
 	    	"activity" => $response->data[0],
 	    	"types" => $typeResponse->data,
 	    	"user" => $_SESSION['user']
