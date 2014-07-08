@@ -14,7 +14,7 @@
 
 		<div class="row" >
 
-				<form role="form" method="post" action="/activity{% if activity.id!='' %}/{{activity.id}}{% endif %}">
+				<form role="form" method="post" action="/activity{% if activity.id!='' %}/{{activity.id}}{% endif %}" id="activity_form">
 					<div class="form-group">
 						<label for="activity_type_id">Type</label>
 						{% for type in types %}
@@ -74,5 +74,31 @@
 					</script>
 				</form>
 		</div>
+
+		<script>
+			$(document).ready(function(){
+				$('#activity_form').submit(function(){
+
+					msg = "";
+					if($('#activity_type_id:checked').length==0){
+						msg += "- activity type\n";
+					}
+
+					if($('#quantity').val()==""){
+						msg += "- quantity\n";
+					}
+
+					if($('#date_added').val()==""){
+						msg += "- when\n";
+					}
+
+					if(msg != ""){
+						alert ("These required fields are missing: \n\n" + msg);
+						return false;
+					} 
+
+				});
+			});
+		</script>
 {% endblock %}
 
