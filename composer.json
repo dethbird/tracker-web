@@ -6,6 +6,7 @@
         "twig/twig": "1.*",
         "guzzlehttp/guzzle": "3.8.1",
         "google/apiclient": "1.0.*@beta",
-        "facebook/php-sdk": "dev-master"
+        "facebook/php-sdk": "dev-master",
+        "cosenary/instagram": "dev-master"
     }
 }

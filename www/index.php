@@ -19,7 +19,8 @@
 
 	global $configs,
 		$client,
-		$googleClient;
+		$googleClient,
+		$instagramClient;
 
 
 	//read env file
@@ -46,7 +47,8 @@
 	$googleClient->setClientSecret($configs['google.client_secret']);
 	$googleClient->setScopes($configs['google.scopes']);
 	$googleClient->setRedirectUri($configs['google.redirect_url']);
-	
+
+		
 
 	$client = new Client($configs['api_url'], array(
 	    "request.options" => array(
@@ -55,6 +57,14 @@
 	       	)
 	    )
 	));
+
+	require_once("../vendor/cosenary/instagram/instagram.class.php");
+	$instagramClient = new Instagram(array(
+      'apiKey'      => $configs['instagram.key'],
+      'apiSecret'   => $configs['instagram.secret'],
+      'apiCallback' => "http://". $_SERVER['HTTP_HOST'] . '/callback/oauth/instagram'
+    ));
+
 
 	class AcmeExtension extends \Twig_Extension
 	{
@@ -488,9 +498,80 @@
 
 	});
 
+
+	/**
+	*  ACCOUNT 
+	*/
+	$app->get('/account/social', $authCheck($app, $client), function () use ($app, $client, $instagramClient) {
+
+		$response = $client->get("/user/social")->send();
+		$response = json_decode($response->getBody(true));
+
+		if(count($response->data->instagram)>0){
+			foreach($response->data->instagram as $instagram){
+				$instagramClient->setAccessToken($instagram->access_token);
+				$i = $instagramClient->getUser();
+				// print_r($i->data);
+				$instagram->_data = $i->data;
+			}
+		}
+	    $app->render('partials/account_social.html.twig', array(
+	    	"section"=>"/account",
+	    	"social"=>$response->data,
+	    	"instagram_login_url" => $instagramClient->getLoginUrl(),
+	    	"user" => $_SESSION['user']
+    	));
+	});
+
+	$app->post('/account/social/delete', $authCheck($app, $client), function () use ($app, $client, $instagramClient) {
+
+		$request = $client->delete("/user/social/delete");
+		$request->getQuery()->set('id', $app->request->params('id'));
+		$request->getQuery()->set('type', $app->request->params('type'));
+		$response = $request->send();
+		$response = json_decode($response->getBody(true));
+		$app->flash("success", "Account removed");
+		$app->redirect("/account/social");
+	});
+
+
+
 	/**
 	*  OAUTH CALLBACK 
 	*/
+	$app->get('/callback/oauth/instagram', function () use ($app, $client, $instagramClient) {
+		
+		if(!isset($_GET['code'])){
+			$app->flash("error", "Instagram not connected");
+			$app->redirect("/account/social");
+		}
+		$data = $instagramClient->getOAuthToken($_GET['code']);
+
+		if(!isset($data->access_token)){
+			$app->flash("error", "Instagram not connected");
+			$app->redirect("/account/social");
+		}
+
+		//post to create the new instagram
+		try {
+			$response = $client->post("/user/instagram", array(), array(
+				"access_token" => $data->access_token,
+				"instagram_user_id" => $data->user->id,
+				"username" => $data->user->username,
+				"profile_picture" => $data->user->profile_picture
+
+			))->send();
+		} catch (\Exception $e) {
+			$app->flash("error", "Instagram connected to another user");
+			$app->redirect("/account/social");
+		}
+
+		$response = json_decode($response->getBody(true));
+
+		$app->flash("success", "Instagram user ". $data->user->username ." connected");
+		$app->redirect("/account/social");
+
+	});
 
 	$app->get('/callback/oauth/google', function () use ($app, $client, $googleClient) {
 
