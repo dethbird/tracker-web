@@ -1,0 +1,53 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}{{parent()}} / activity / add{% endblock %}
+
+ {% block opengraph_meta %}
+  		{{parent()}}
+		<meta property="og:title" content="RishiSatsangi.com  / Art / {{data.name}}">
+		<meta property="og:description" content="{{data.description|striptags}}">
+  {% endblock %} 
+
+{% block body %}
+	{{ parent() }}
+    <div class="clearfix"></div>
+    
+	<div class="row" >
+		<a href="{{instagram_login_url}}" class="btn btn-large btn-primary"><span class="glyphicon glyphicon-link"></span> Instagram Connect</a>
+	</div>
+	{% for instagram in social.instagram %}
+	<div class="media well">
+	  <a class="pull-left" href="#">
+	    <img class="media-object" src="{{instagram._data.profile_picture}}" alt="...">
+	  </a>
+	  <div class="media-body">
+	    <h4 class="media-heading">@{{instagram._data.username}}</h4>
+	    connected: {{instagram.date_updated.date}}<br />
+	    media: {{instagram._data.counts.media}}<br />
+	    followers: {{instagram._data.counts.followed_by}}<br />
+	    following: {{instagram._data.counts.follows}}<br />
+	    <a href="#" class="btn btn-default btn-xs remove" data-id="{{instagram.id}}" data-type="instagram">Remove</a>
+	  </div>
+	</div>
+	{% endfor %}
+
+	<script>
+		$(document).ready(function(){
+			$('.remove').click(function(){
+				var del = confirm("Really remove this account?\n- This will also delete all associated data");
+				if(del===true){
+					$('#delete_form #id').val($(this).attr('data-id'));
+					$('#delete_form #type').val($(this).attr('data-type'));
+					$('#delete_form').submit();
+				}
+			});
+		});
+	</script>
+	<form action="/account/social/delete" method="post" id="delete_form" name="delete_form">
+		<input type="hidden" name="id" id="id" />
+		<input type="hidden" name="type" id="type" />
+	</form>
+{% endblock %}
+
+
+

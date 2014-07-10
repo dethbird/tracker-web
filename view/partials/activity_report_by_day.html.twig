@@ -45,8 +45,16 @@
 							 <td class="time">
 							 	 <small>{{log.date_added.date|date_format("g:i a")}}</small>
 							 </td>
-							 <td class="name">
-							 	  <small>{{log.note}}</small>
+							 <td class="note">
+						 		{% if log.type=="normal" %}
+						 			<small>{{log.note}}</small>
+						 		{% elseif log.type=="instagram" %}
+						 			<a href="{{log.json_decoded.link}}" target="_blank"><img src="{{log.json_decoded.images.thumbnail.url}}" class="img-thumbnail"/></a>
+						 			<br />
+						 			{% for tag in log.json_decoded.tags %} #{{tag}}{% endfor %}
+						 			<br />
+						 			<small><a href="http://instagram.com/{{log.json_decoded.user.username}}" target="_blank">@{{log.json_decoded.user.username}}</a></small>
+						 		{% endif %}
 							 </td>
 							 <td class="name">
 							 	<span class="badge">{{log.quantity}}</span>
@@ -178,6 +186,26 @@
 				$('.edit').click(function(){
 					document.location = "/activity/" + $(this).attr('data-id');
 				});
+				$('.note').each(function(){
+					// var hashtags = /\#\w+/g.exec( $(this).html());
+					var that = $(this);
+					// $(hashtags).each(function(i,h){
+					// 	console.log(h);
+					// 	that.html(
+					// 		that.html().replace(h, "<strong>" + h + "</strong>")
+					// 	);
+					// });
+					var hashtag_regexp = /#([a-zA-Z0-9]+)/g;
+					that.html(
+						that.html().replace(
+					        hashtag_regexp,
+					        '<a class="hashtag" target="_blank">#$1</a>'
+				        )
+				    );
+
+				
+				});
+				// /#\w+/g
 			});
 		</script>
 		<form action="/activity/delete" method="post" id="delete_activity_form" name="delete_activity_form">
