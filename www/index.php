@@ -18,6 +18,7 @@
 
 
 	global $configs,
+		$logger,
 		$client,
 		$googleClient,
 		$instagramClient;
@@ -38,6 +39,7 @@
 	*/
 	
 	require '../vendor/autoload.php';
+	require_once '../lib/logger.php';
 
 	use Guzzle\Http\Client;
 	use Google\Client as GoogleClient;
@@ -100,9 +102,9 @@
 	    	return '<span class="label label-'.
 	    	($activity_type['polarity']>0?"success":"danger").
 	    	'" >'.
+	    	($has_goal=="Y" ? '<span class="glyphicon glyphicon-'.($activity_type['polarity']>0?"star":"star-empty").'"> </span> ' : null).
 	    	$activity_type['name'].
 
-	    	($has_goal=="Y" ? ' <span class="glyphicon glyphicon-'.($activity_type['polarity']>0?"star":"star-empty").'"></span>' : null).
 	    	'</span>';
 	    }
 
@@ -534,6 +536,46 @@
 		$app->redirect("/account/social");
 	});
 
+	$app->get('/callback/subscribe/instagram/init', $authCheck($app, $client), function () use ($app, $client, $instagramClient) {
+		global $configs;
+
+		$params = array(
+			"client_id" => $configs['instagram.key'],
+			"client_secret" => $configs['instagram.secret'],
+			"object" => "user",
+			"aspect" => "media",
+			"verify_token" => "Pizza",
+			"callback_url" => "http://". $_SERVER['HTTP_HOST']  . '/callback/subscribe/instagram'
+		);
+
+		$response = $client->post("https://api.instagram.com/v1/subscriptions/", array(), $params)->send();
+		echo "<pre>";
+		print_r($response->getBody(true));
+		echo "</pre>";
+
+	});
+
+	$app->get('/callback/subscribe/instagram', function () use ($app, $client, $instagramClient) {
+		Logger::log($_GET);
+		echo $_GET['hub_challenge'];
+
+	});
+
+	$app->post('/callback/subscribe/instagram', function () use ($app, $client, $instagramClient) {
+
+		Logger::log($app->request->getBody(true));
+		$request = json_decode($app->request->getBody(true));
+		// Logger::log($request[0]->object_id);
+		// Logger::log($request[0]->data->media_id);
+		//throw this to api to process
+		$response = $client->post("/social/activity/instagram", array(), array(
+			"social_user_id" => $request[0]->object_id,
+			"media_id" => $request[0]->data->media_id
+		))->send();
+
+		Logger::log($response->getBody(true));
+
+	});
 
 
 	/**

@@ -54,11 +54,19 @@ td.quantity {
 	text-align:right;
 }
 td.name {
+	width:200px;
+	padding-right:10px;
+}
+td.note {
 	width:150px;
+	font-size: 0.8em;
+}
+td.note small {
+	/*font-size: .7em;*/
 }
 td.time {
-	width:120px;
-	text-align:left;
+	font-size: 0.8em;
+	/*text-align:left;*/
 }
 td.action {
 	width:120px;
