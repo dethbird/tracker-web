@@ -102,9 +102,9 @@
 	    	return '<span class="label label-'.
 	    	($activity_type['polarity']>0?"success":"danger").
 	    	'" >'.
-	    	($has_goal=="Y" ? '<span class="glyphicon glyphicon-'.($activity_type['polarity']>0?"star":"star-empty").'"> </span> ' : null).
 	    	$activity_type['name'].
 
+	    	($has_goal=="Y" ? ' <span class="glyphicon glyphicon-'.($activity_type['polarity']>0?"star":"star-empty").'"></span>' : null).
 	    	'</span>';
 	    }
 
@@ -544,13 +544,15 @@
 			"client_secret" => $configs['instagram.secret'],
 			"object" => "user",
 			"aspect" => "media",
-			"verify_token" => "Pizza",
+			"verify_token" => $configs['instagram.verify_token'],
 			"callback_url" => "http://". $_SERVER['HTTP_HOST']  . '/callback/subscribe/instagram'
 		);
 
 		$response = $client->post("https://api.instagram.com/v1/subscriptions/", array(), $params)->send();
 		echo "<pre>";
-		print_r($response->getBody(true));
+		print_r($configs['instagram.verify_token']);
+		echo "\n";
+		print_r(json_decode($response->getBody(true)));
 		echo "</pre>";
 
 	});
