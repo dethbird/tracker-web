@@ -31,6 +31,24 @@
 	</div>
 	{% endfor %}
 
+	<div class="row" >
+		<a href="/social/auth/flickr" class="btn btn-large btn-primary"><span class="glyphicon glyphicon-link"></span> Flickr Connect</a>
+	</div>
+	{% for flickr in social.flickr %}
+	<div class="media well">
+	  <a class="pull-left" href="#">
+	    <img class="media-object" src="http://farm{{flickr.iconfarm}}.staticflickr.com/{{flickr.iconserver}}/buddyicons/{{flickr.nsid}}.jpg" alt="...">
+	  </a>
+	  <div class="media-body">
+	    <h4 class="media-heading">@{{flickr._data.username}}</h4>
+	    connected: {{flickr.date_updated.date}}<br />
+	    photos: {{flickr._data.photos.count}}<br />
+	    views: {{flickr._data.photos.views}}<br />
+	    <a href="#" class="btn btn-default btn-xs remove" data-id="{{flickr.id}}" data-type="flickr">Remove</a>
+	  </div>
+	</div>
+	{% endfor %}
+
 	<script>
 		$(document).ready(function(){
 			$('.remove').click(function(){

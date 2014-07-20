@@ -18,10 +18,12 @@
 
 
 	global $configs,
+		$session,
 		$logger,
 		$client,
 		$googleClient,
-		$instagramClient;
+		$instagramClient,
+		$flickrClient;
 
 
 	//read env file
@@ -41,17 +43,27 @@
 	require '../vendor/autoload.php';
 	require_once '../lib/logger.php';
 
+	use OAuth\Common\Storage\Session;
+	use OAuth\Common\Consumer\Credentials;
+	use OAuth\Common\Http\Uri\UriFactory;
 	use Guzzle\Http\Client;
 	use Google\Client as GoogleClient;
 
+	// Basic functional classes
+	$session = new Session();
+	$uriFactory = new UriFactory();
+	$currentUri = $uriFactory->createFromSuperGlobalArray($_SERVER);
+	$oauthServiceFactory = new OAuth\ServiceFactory();
+
+
+	// Google client
 	$googleClient = new Google_Client();
 	$googleClient->setClientId($configs['google.client_id']);
 	$googleClient->setClientSecret($configs['google.client_secret']);
 	$googleClient->setScopes($configs['google.scopes']);
 	$googleClient->setRedirectUri($configs['google.redirect_url']);
-
 		
-
+	// HTTP client
 	$client = new Client($configs['api_url'], array(
 	    "request.options" => array(
 	       "headers" => array(
@@ -60,6 +72,7 @@
 	    )
 	));
 
+	// Instagram Client
 	require_once("../vendor/cosenary/instagram/instagram.class.php");
 	$instagramClient = new Instagram(array(
       'apiKey'      => $configs['instagram.key'],
@@ -67,7 +80,16 @@
       'apiCallback' => "http://". $_SERVER['HTTP_HOST'] . '/callback/oauth/instagram'
     ));
 
+	// Flickr Client
+	$credentials = new Credentials(
+		$configs['flickr.key'],
+		$configs['flickr.secret'],
+		"http://" . $currentUri->getHost() . "/callback/oauth/flickr"
+	);
+	$flickrClient = $oauthServiceFactory->createService('Flickr', $credentials, $session);
 
+
+	// Twig Extension
 	class AcmeExtension extends \Twig_Extension
 	{
 	    public function getFilters()
@@ -504,7 +526,7 @@
 	/**
 	*  ACCOUNT 
 	*/
-	$app->get('/account/social', $authCheck($app, $client), function () use ($app, $client, $instagramClient) {
+	$app->get('/account/social', $authCheck($app, $client), function () use ($app, $client, $configs, $instagramClient) {
 
 		$response = $client->get("/user/social")->send();
 		$response = json_decode($response->getBody(true));
@@ -517,6 +539,22 @@
 				$instagram->_data = $i->data;
 			}
 		}
+		if(count($response->data->flickr)>0){
+			foreach($response->data->flickr as $flickr){
+
+				$metadata = new Rezzza\Flickr\Metadata($configs['flickr.key'], $configs['flickr.secret']);
+				$metadata->setOauthAccess($flickr->oauth_token, $flickr->secret);
+				$factory  = new Rezzza\Flickr\ApiFactory($metadata, new Rezzza\Flickr\Http\GuzzleAdapter());
+				$xml = $factory->call('flickr.people.getInfo', array(
+						"user_id" => $flickr->nsid
+					)
+				);
+				// echo "<pre>";
+				// print_r(json_decode(json_encode((array)$xml->person))); 
+				// echo "</pre>"; die();
+				$flickr->_data = json_decode(json_encode((array)$xml->person));
+			}
+		}
 	    $app->render('partials/account_social.html.twig', array(
 	    	"section"=>"/account",
 	    	"social"=>$response->data,
@@ -526,7 +564,7 @@
 	});
 
 	$app->post('/account/social/delete', $authCheck($app, $client), function () use ($app, $client, $instagramClient) {
-
+		// var_dump($app->request->params()); die();
 		$request = $client->delete("/user/social/delete");
 		$request->getQuery()->set('id', $app->request->params('id'));
 		$request->getQuery()->set('type', $app->request->params('type'));
@@ -567,8 +605,7 @@
 
 		Logger::log($app->request->getBody(true));
 		$request = json_decode($app->request->getBody(true));
-		// Logger::log($request[0]->object_id);
-		// Logger::log($request[0]->data->media_id);
+
 		//throw this to api to process
 		$response = $client->post("/social/activity/instagram", array(), array(
 			"social_user_id" => $request[0]->object_id,
@@ -578,6 +615,18 @@
 		Logger::log($response->getBody(true));
 
 	});
+
+	/**
+	*  OAUTH AUTH LINK 
+	*/
+	$app->get('/social/auth/flickr', function () use ($app, $client, $flickrClient) {
+		$token = $flickrClient->requestRequestToken();
+		$oauth_token = $token->getAccessToken();
+		$secret = $token->getAccessTokenSecret();
+		$url = $flickrClient->getAuthorizationUri(array('oauth_token' => $oauth_token, 'perms' => 'read'));
+		header('Location: '.$url);
+	});
+
 
 
 	/**
@@ -613,6 +662,86 @@
 		$response = json_decode($response->getBody(true));
 
 		$app->flash("success", "Instagram user ". $data->user->username ." connected");
+		$app->redirect("/account/social");
+
+	});
+
+	$app->get('/callback/oauth/flickr', function () use ($app, $client, $configs, $session, $flickrClient) {
+
+		
+		if(!isset($_GET['oauth_token']) || !isset($_GET['oauth_verifier'])){
+			$app->flash("error", "Flickr not connected");
+			$app->redirect("/account/social");
+		}
+
+		$requestToken = $session->retrieveAccessToken('Flickr');
+		$secret = $requestToken->getAccessTokenSecret();
+
+
+		$token = $flickrClient->requestAccessToken($_GET['oauth_token'], $_GET['oauth_verifier'], $secret);
+
+		$oauth_token = $token->getAccessToken();
+		$secret = $token->getAccessTokenSecret();
+		$userInfo = $token->getExtraParams();
+
+		$session->storeAccessToken('Flickr', $token);
+
+
+		if(!isset($oauth_token)){
+			$app->flash("error", "Flickr not connected");
+			$app->redirect("/account/social");
+		}
+
+		$metadata = new Rezzza\Flickr\Metadata($configs['flickr.key'], $configs['flickr.secret']);
+		$metadata->setOauthAccess($oauth_token, $secret);
+		$factory  = new Rezzza\Flickr\ApiFactory($metadata, new Rezzza\Flickr\Http\GuzzleAdapter());
+		$xml = $factory->call('flickr.people.getInfo', array(
+				"user_id" => $userInfo['user_nsid']
+			)
+		);
+
+		$personAttr = array();
+		foreach( $xml->person->attributes() as $k=>$v ){
+			$personAttr[$k] = (string) $v;
+		}
+		$personAttr['photosurl'] = (string) $xml->person->photosurl;
+		$personAttr['username'] = (string) $xml->person->username;
+
+
+		// echo "<pre>";
+		// print_r($xml);
+		// print_r($personAttr);
+		// echo "</pre>";
+		// die();
+
+
+		//post to create the new flickr
+		try {
+			$response = $client->post("/user/flickr", array(), array(
+				"oauth_token" => $oauth_token,
+				"secret" => $secret,
+				"username" =>  $personAttr['username'],
+				"nsid" => $personAttr['nsid'],
+				"iconserver" => $personAttr['iconserver'],
+				"iconfarm" => $personAttr['iconfarm'],
+				"photosurl" => $personAttr['photosurl']
+
+			))->send();
+		} catch (\Exception $e) {
+			// var_dump($e); die();
+			$app->flash("error", "flickr connected to another user");
+			$app->redirect("/account/social");
+		}
+
+		// echo "<pre>";
+		// // print_r($xml);
+		// print_r($response->getBody(true));
+		// echo "</pre>";
+		// die();
+
+		$response = json_decode($response->getBody(true));
+
+		$app->flash("success", "flickr user ". $personAttr['username'] ." connected");
 		$app->redirect("/account/social");
 
 	});
