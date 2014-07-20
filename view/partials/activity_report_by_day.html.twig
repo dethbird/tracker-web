@@ -48,10 +48,21 @@
 							 <td class="note">
 						 		{% if log.type=="normal" %}
 						 			<small>{{log.note}}</small>
+						 		{% elseif log.type=="flickr" %}
+						 			<a href="{{log.json_decoded.photo.urls.url}}" target="_blank"><img src="https://farm{{log.json_decoded.photo.attributes.farm}}.staticflickr.com/{{log.json_decoded.photo.attributes.server}}/{{log.json_decoded.photo.attributes.id}}_{{log.json_decoded.photo.attributes.secret}}_m.jpg" class="img-thumbnail"/></a>
+						 			{% for tag in log.json_decoded.photo.tags %} #{{tag}}{% endfor %}
+						 			{%if log.note != "" %}
+						 				<br />{{log.note}}
+						 			{% endif %}
+						 			<small><a href="https://www.flickr.com/photos/{{log.json_decoded.photo.owner.attributes.path_alias}}" target="_blank">@{{log.json_decoded.photo.owner.attributes.path_alias}}</a></small>
+						 			<!-- <pre>{{log.json_decoded|print_r}}</pre> -->
 						 		{% elseif log.type=="instagram" %}
 						 			<a href="{{log.json_decoded.link}}" target="_blank"><img src="{{log.json_decoded.images.thumbnail.url}}" class="img-thumbnail"/></a>
 						 			<br />
 						 			{% for tag in log.json_decoded.tags %} #{{tag}}{% endfor %}
+						 			{%if log.note != "" %}
+						 				<br />{{log.note}}
+						 			{% endif %}
 						 			<br />
 						 			<small><a href="http://instagram.com/{{log.json_decoded.user.username}}" target="_blank">@{{log.json_decoded.user.username}}</a></small>
 						 		{% endif %}

@@ -21,6 +21,7 @@
 		$session,
 		$logger,
 		$client,
+		$currentUri,
 		$googleClient,
 		$instagramClient,
 		$flickrClient;
@@ -616,6 +617,42 @@
 
 	});
 
+	$app->get('/callback/subscribe/flickr', function () use ($app, $client, $instagramClient) {
+		Logger::log($_GET);
+		echo $_GET['challenge'];
+
+	});
+
+	$app->post('/callback/subscribe/flickr', function () use ($app, $client, $instagramClient) {
+
+		Logger::log($app->request->getBody(true));
+
+
+		// echo $xml;
+		$xml = $app->request->getBody(true);
+		$xml = preg_replace("/[\r\n]+/", "\n", $xml);
+		$xml = preg_replace('~(</?|\s)([a-z0-9_]+):~is', '$1$2_', $xml);
+		$xml = new SimpleXMLElement($xml);
+		Logger::log($xml);
+
+		$idBurst = explode("/", $xml->entry->id);
+		$id = $idBurst[2];
+
+		$nsid = (string) $xml->entry->author->flickr_nsid;
+		// print_r($idBurst[2]);
+		// print_r($nsid);
+		// die();
+
+		//throw this to api to process
+		$response = $client->post("/social/activity/flickr", array(), array(
+			"social_user_id" => $nsid,
+			"media_id" => $id
+		))->send();
+
+		Logger::log($response->getBody(true));
+
+	});	
+
 	/**
 	*  OAUTH AUTH LINK 
 	*/
@@ -666,7 +703,7 @@
 
 	});
 
-	$app->get('/callback/oauth/flickr', function () use ($app, $client, $configs, $session, $flickrClient) {
+	$app->get('/callback/oauth/flickr', function () use ($app, $client, $currentUri, $configs, $session, $flickrClient) {
 
 		
 		if(!isset($_GET['oauth_token']) || !isset($_GET['oauth_verifier'])){
@@ -699,6 +736,15 @@
 				"user_id" => $userInfo['user_nsid']
 			)
 		);
+
+		$xml2 = $factory->call('flickr.push.subscribe', array(
+				"topic" => 'my_photos',
+				"verify" => "sync",
+				"callback" => "http://" . $currentUri->getHost() . "/callback/subscribe/flickr"
+			)
+		);
+
+		// Logger::log($xml2);
 
 		$personAttr = array();
 		foreach( $xml->person->attributes() as $k=>$v ){
