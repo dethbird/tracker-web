@@ -66,6 +66,13 @@
 						 			{% endif %}
 						 			<br />
 						 			<small><a href="http://instagram.com/{{log.json_decoded.user.username}}" target="_blank">@{{log.json_decoded.user.username}}</a></small>
+						 		{% elseif log.type=="foursquare" %}
+						 			<a href="https://foursquare.com/v/{{log.json_decoded.checkin.venue.id}}" target="_blank">{{log.json_decoded.checkin.venue.name}}</a><br />
+						 			{% for addr in log.json_decoded.checkin.venue.location.formattedAddress %}
+						 				<small>{{addr}}</small><br />
+						 			{% endfor %}
+						 			<br />
+						 			<small><a href="https://foursquare.com/u/{{log.json_decoded.checkin.user.id}}" target="_blank">@{{log.json_decoded.checkin.user.firstName}} {{log.json_decoded.checkin.user.lastName}}</a></small>
 						 		{% endif %}
 							 </td>
 							 <td class="name">

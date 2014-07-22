@@ -575,7 +575,7 @@
 				$command = $client->getCommand('users', array("user_id" => $foursquare->foursquare_user_id));
 				$result = $command->execute();
 				$foursquare->_data = $result['response'];
-				
+
 				// Logger::log($foursquare);
 			}
 		}
@@ -663,6 +663,24 @@
 		))->send();
 
 	});	
+
+	$app->get('/callback/subscribe/instagram', function () use ($app, $client, $instagramClient) {
+		echo $_GET['hub_challenge'];
+
+	});
+
+	$app->post('/callback/subscribe/foursquare', function () use ($app, $client) {
+
+		$checkin = json_decode($app->request->params('checkin'));
+
+		//throw this to api to process
+		$response = $client->post("/social/activity/foursquare", array(), array(
+			"social_user_id" => $checkin->user->id,
+			"media_id" => $checkin->id
+		))->send();
+
+		Logger::log($response->getBody());
+	});
 
 	/**
 	*  OAUTH AUTH LINK 
