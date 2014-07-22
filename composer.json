@@ -5,10 +5,11 @@
         "slim/views": "0.1.*",
         "twig/twig": "1.*",
         "guzzlehttp/guzzle": "3.8.1",
+        "lusitanian/oauth": "~0.3",
         "google/apiclient": "1.0.*@beta",
         "facebook/php-sdk": "dev-master",
         "cosenary/instagram": "dev-master",
         "rezzza/flickr": "dev-master",
-        "lusitanian/oauth": "~0.3"
+        "jcroll/foursquare-api-client": "dev-master"
     }
 }

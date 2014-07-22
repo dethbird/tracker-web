@@ -49,6 +49,30 @@
 	</div>
 	{% endfor %}
 
+	<div class="row" >
+		<a href="/social/auth/foursquare" class="btn btn-large btn-primary"><span class="glyphicon glyphicon-link"></span> Foursquare Connect</a>
+	</div>
+
+
+	{% for foursquare in social.foursquare %}
+	<div class="media well">
+	  <a class="pull-left" href="#">
+	    <img class="media-object" src="{{foursquare._data.user.photo.prefix}}150x150{{foursquare._data.user.photo.suffix}}" alt="...">
+	  </a>
+	  <div class="media-body">
+	    <h4 class="media-heading">@{{foursquare._data.user.firstName}} {{foursquare._data.user.lastName}}</h4>
+	    connected: {{foursquare.date_updated.date}}<br />
+	    friends: {{foursquare._data.user.friends.count}}<br />
+	    following: {{foursquare._data.user.following.count}}<br />
+	    badges: {{foursquare._data.user.badges.count}}<br />
+	    mayorships: {{foursquare._data.user.mayorships.count}}<br />
+	    checkins: {{foursquare._data.user.checkins.count}}<br />
+	    tips: {{foursquare._data.user.tips.count}}<br />
+	    <a href="#" class="btn btn-default btn-xs remove" data-id="{{foursquare.id}}" data-type="foursquare">Remove</a>
+	  </div>
+	</div>
+	{% endfor %}
+
 	<script>
 		$(document).ready(function(){
 			$('.remove').click(function(){

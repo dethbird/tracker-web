@@ -24,7 +24,8 @@
 		$currentUri,
 		$googleClient,
 		$instagramClient,
-		$flickrClient;
+		$flickrClient,
+		$foursquareClient;
 
 
 	//read env file
@@ -49,6 +50,7 @@
 	use OAuth\Common\Http\Uri\UriFactory;
 	use Guzzle\Http\Client;
 	use Google\Client as GoogleClient;
+	use Jcroll\FoursquareApiClient\Client\FoursquareClient;
 
 	// Basic functional classes
 	$session = new Session();
@@ -88,6 +90,16 @@
 		"http://" . $currentUri->getHost() . "/callback/oauth/flickr"
 	);
 	$flickrClient = $oauthServiceFactory->createService('Flickr', $credentials, $session);
+
+	// Foursquare Client
+	$credentials = new Credentials(
+		$configs['foursquare.key'],
+		$configs['foursquare.secret'],
+		"http://" . $currentUri->getHost() . "/callback/oauth/foursquare"
+	);
+	$foursquareClient = $oauthServiceFactory->createService('Foursquare', $credentials, $session);
+
+	// var_dump($foursquareClient); die();
 
 
 	// Twig Extension
@@ -527,7 +539,7 @@
 	/**
 	*  ACCOUNT 
 	*/
-	$app->get('/account/social', $authCheck($app, $client), function () use ($app, $client, $configs, $instagramClient) {
+	$app->get('/account/social', $authCheck($app, $client), function () use ($app, $client, $configs, $instagramClient, $foursquareClient) {
 
 		$response = $client->get("/user/social")->send();
 		$response = json_decode($response->getBody(true));
@@ -550,10 +562,21 @@
 						"user_id" => $flickr->nsid
 					)
 				);
-				// echo "<pre>";
-				// print_r(json_decode(json_encode((array)$xml->person))); 
-				// echo "</pre>"; die();
 				$flickr->_data = json_decode(json_encode((array)$xml->person));
+			}
+		}
+		if(count($response->data->foursquare)>0){
+			foreach($response->data->foursquare as $foursquare){
+				$client = FoursquareClient::factory(array(
+				    'client_id'     => $configs['foursquare.key'],
+				    'client_secret' => $configs['foursquare.secret']
+				));
+				$client->addToken($foursquare->access_token);
+				$command = $client->getCommand('users', array("user_id" => $foursquare->foursquare_user_id));
+				$result = $command->execute();
+				$foursquare->_data = $result['response'];
+				
+				// Logger::log($foursquare);
 			}
 		}
 	    $app->render('partials/account_social.html.twig', array(
@@ -562,6 +585,7 @@
 	    	"instagram_login_url" => $instagramClient->getLoginUrl(),
 	    	"user" => $_SESSION['user']
     	));
+
 	});
 
 	$app->post('/account/social/delete', $authCheck($app, $client), function () use ($app, $client, $instagramClient) {
@@ -597,14 +621,12 @@
 	});
 
 	$app->get('/callback/subscribe/instagram', function () use ($app, $client, $instagramClient) {
-		Logger::log($_GET);
 		echo $_GET['hub_challenge'];
 
 	});
 
 	$app->post('/callback/subscribe/instagram', function () use ($app, $client, $instagramClient) {
 
-		Logger::log($app->request->getBody(true));
 		$request = json_decode($app->request->getBody(true));
 
 		//throw this to api to process
@@ -612,44 +634,33 @@
 			"social_user_id" => $request[0]->object_id,
 			"media_id" => $request[0]->data->media_id
 		))->send();
-
-		Logger::log($response->getBody(true));
-
 	});
 
 	$app->get('/callback/subscribe/flickr', function () use ($app, $client, $instagramClient) {
-		Logger::log($_GET);
+		// Logger::log($_GET);
 		echo $_GET['challenge'];
 
 	});
 
 	$app->post('/callback/subscribe/flickr', function () use ($app, $client, $instagramClient) {
 
-		Logger::log($app->request->getBody(true));
-
-
 		// echo $xml;
 		$xml = $app->request->getBody(true);
 		$xml = preg_replace("/[\r\n]+/", "\n", $xml);
 		$xml = preg_replace('~(</?|\s)([a-z0-9_]+):~is', '$1$2_', $xml);
 		$xml = new SimpleXMLElement($xml);
-		Logger::log($xml);
+		// Logger::log($xml);
 
 		$idBurst = explode("/", $xml->entry->id);
 		$id = $idBurst[2];
 
 		$nsid = (string) $xml->entry->author->flickr_nsid;
-		// print_r($idBurst[2]);
-		// print_r($nsid);
-		// die();
 
 		//throw this to api to process
 		$response = $client->post("/social/activity/flickr", array(), array(
 			"social_user_id" => $nsid,
 			"media_id" => $id
 		))->send();
-
-		Logger::log($response->getBody(true));
 
 	});	
 
@@ -661,6 +672,12 @@
 		$oauth_token = $token->getAccessToken();
 		$secret = $token->getAccessTokenSecret();
 		$url = $flickrClient->getAuthorizationUri(array('oauth_token' => $oauth_token, 'perms' => 'read'));
+		header('Location: '.$url);
+	});
+
+	$app->get('/social/auth/foursquare', function () use ($app, $client, $foursquareClient) {
+		// Logger::log($foursquareClient);
+		$url = $foursquareClient->getAuthorizationUri();
 		header('Location: '.$url);
 	});
 
@@ -699,6 +716,47 @@
 		$response = json_decode($response->getBody(true));
 
 		$app->flash("success", "Instagram user ". $data->user->username ." connected");
+		$app->redirect("/account/social");
+
+	});
+
+	$app->get('/callback/oauth/foursquare', function () use ($app, $client, $foursquareClient) {
+		
+		if(!isset($_GET['code'])){
+			$app->flash("error", "Foursquare not connected");
+			$app->redirect("/account/social");
+		}
+		$data = $foursquareClient->requestAccessToken($_GET['code']);
+
+
+		$accessToken = $data->getAccessToken();
+
+		if(!isset($accessToken)){
+			$app->flash("error", "Foursquare not connected");
+			$app->redirect("/account/social");
+		}
+
+		// Send a request with it
+    	$result = $foursquareClient->request('users/self');
+    	$result = json_decode($result);
+
+		//post to create the new foursquare
+		try {
+			$response = $client->post("/user/foursquare", array(), array(
+				"access_token" => $accessToken,
+				"foursquare_user_id" => $result->response->user->id,
+				"username" => $result->response->user->firstName . " " .$result->response->user->lastName,
+				"profile_picture" => $result->response->user->photo->prefix . "150x150" . $result->response->user->photo->suffix
+
+			))->send();
+		} catch (\Exception $e) {
+			$app->flash("error", "Foursquare connected to another user");
+			$app->redirect("/account/social");
+		}
+
+		$response = json_decode($response->getBody(true));
+
+		$app->flash("success", "Foursquare user ". $result->response->user->firstName . " " .$result->response->user->lastName ." connected");
 		$app->redirect("/account/social");
 
 	});
