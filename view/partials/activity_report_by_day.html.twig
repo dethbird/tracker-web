@@ -67,6 +67,9 @@
 						 			<br />
 						 			<small><a href="http://instagram.com/{{log.json_decoded.user.username}}" target="_blank">@{{log.json_decoded.user.username}}</a></small>
 						 		{% elseif log.type=="foursquare" %}
+						 			<!-- <pre>{{log.json_decoded|print_r}}</pre> -->
+						 			<img src="http://maps.googleapis.com/maps/api/staticmap?center={% for addr in log.json_decoded.checkin.venue.location.formattedAddress %}{{addr}}{% endfor %}&zoom=15&size=200x150&maptype=roadmap
+&markers=color:red%7Clabel:A%7C{{log.json_decoded.checkin.venue.location.lat}},{{log.json_decoded.checkin.venue.location.lng}}">
 						 			<a href="https://foursquare.com/v/{{log.json_decoded.checkin.venue.id}}" target="_blank">{{log.json_decoded.checkin.venue.name}}</a><br />
 						 			{% for addr in log.json_decoded.checkin.venue.location.formattedAddress %}
 						 				<small>{{addr}}</small><br />
