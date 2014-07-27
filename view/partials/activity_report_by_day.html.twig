@@ -51,7 +51,8 @@
 						 		{% elseif log.type=="flickr" %}
 						 			<a href="{{log.json_decoded.photo.urls.url}}" target="_blank"><img src="https://farm{{log.json_decoded.photo.attributes.farm}}.staticflickr.com/{{log.json_decoded.photo.attributes.server}}/{{log.json_decoded.photo.attributes.id}}_{{log.json_decoded.photo.attributes.secret}}_m.jpg" class="img-thumbnail"/></a>
 						 			{{log.json_decoded.photo.title}}<br />
-						 			{% for tag in log.json_decoded.photo.tags %} #{{tag}}{% endfor %}
+						 			{% for tag in log.json_decoded.photo.tags.tag %} #{{tag}}{% endfor %}
+						 			<br />
 						 			{%if log.note != "" %}
 						 				<br />{{log.note}}
 						 			{% endif %}
