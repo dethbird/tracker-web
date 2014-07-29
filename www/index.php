@@ -364,18 +364,14 @@
 
 	//edit log entry form
 	$app->get('/activity/:id', $authCheck($app, $client), function ($id) use ($app, $client) {
-		// var_dump($client);die();
-		$response = json_decode($client->get("activity/".$id)->send()->getBody(true));
-		// var_dump($response); die();
-		$activity = $response->data[0];
-		//
-		// var_dump($response);die();
 
-		$typeResponse = json_decode($client->get("activity/type")->send()->getBody(true));
+		$response = json_decode($client->get("activity/".$id)->send()->getBody(true));
+
+		$activity = $response->data[0];
+
 	    $app->render('partials/activity_form.html.twig', array(
 	    	"section"=>"/activity",
 	    	"activity" => $response->data[0],
-	    	"types" => $typeResponse->data,
 	    	"user" => $_SESSION['user']
     	));
 	});

@@ -47,25 +47,17 @@
 							 </td>
 							 <td class="note">
 							 	<!-- <pre>{{log.name|raw}}</pre> -->
-						 		{% if log.type=="normal" %}
-						 			<small>{{log.note}}</small>
-						 		{% elseif log.name=="Flickr" %}
+						 		{% if log.name=="Flickr" %}
 						 			<a href="{{log.json_decoded.photo.urls.url}}" target="_blank"><img src="https://farm{{log.json_decoded.photo.attributes.farm}}.staticflickr.com/{{log.json_decoded.photo.attributes.server}}/{{log.json_decoded.photo.attributes.id}}_{{log.json_decoded.photo.attributes.secret}}_m.jpg" class="img-thumbnail"/></a>
 						 			{{log.json_decoded.photo.title}}<br />
 						 			{% for tag in log.json_decoded.photo.tags.tag %} #{{tag}}{% endfor %}
 						 			<br />
-						 			{%if log.note != "" %}
-						 				<br />{{log.note}}
-						 			{% endif %}
 						 			<small><a href="https://www.flickr.com/photos/{{log.json_decoded.photo.owner.attributes.path_alias}}" target="_blank">@{{log.json_decoded.photo.owner.attributes.path_alias}}</a></small>
 						 			<!-- <pre>{{log.json_decoded|print_r}}</pre> -->
 						 		{% elseif log.name=="Instagram" %}
 						 			<a href="{{log.json_decoded.link}}" target="_blank"><img src="{{log.json_decoded.images.thumbnail.url}}" class="img-thumbnail"/></a>
 						 			<br />
 						 			{% for tag in log.json_decoded.tags %} #{{tag}}{% endfor %}
-						 			{%if log.note != "" %}
-						 				<br />{{log.note}}
-						 			{% endif %}
 						 			<br />
 						 			<small><a href="http://instagram.com/{{log.json_decoded.user.username}}" target="_blank">@{{log.json_decoded.user.username}}</a></small>
 						 		{% elseif log.name=="Foursquare" %}
@@ -79,6 +71,8 @@
 						 			<br />
 						 			<small><a href="https://foursquare.com/u/{{log.json_decoded.checkin.user.id}}" target="_blank">@{{log.json_decoded.checkin.user.firstName}} {{log.json_decoded.checkin.user.lastName}}</a></small>
 						 		{% endif %}
+						 		<br />
+					 			<small>{{log.note}}</small>
 							 </td>
 							 <td class="name">
 							 	<span class="badge">{{log.quantity}}</span>

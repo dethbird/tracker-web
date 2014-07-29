@@ -1,6 +1,6 @@
 {% extends 'layout.html.twig' %}
 
-{% block title %}{{parent()}} / activity / add{% endblock %}
+{% block title %}{{parent()}} / activity / {% if activity.id!='' %}edit{% else %}add{% endif %}{% endblock %}
 
  {% block opengraph_meta %}
   		{{parent()}}
@@ -15,17 +15,54 @@
 		<div class="row" >
 
 				<form role="form" method="post" action="/activity{% if activity.id!='' %}/{{activity.id}}{% endif %}" id="activity_form">
-					<div class="form-group">
-						<label for="activity_type_id">Type</label>
-						{% for type in types %}
-							<div class="radio">
-								<label>
-								<input type="radio" name="activity_type_id" id="activity_type_id" value="{{ type.id }}" {% if(activity_type_id==type.id) %}checked="checked"{% endif %} {% if(activity.activity_type_id==type.id) %}checked="checked"{% endif %}>
-								 <span class="label label-{%if type.polarity > 0%}success{%else%}danger{%endif%}">{{type.name}}</span> 
-								</label>
-							</div>
-						{% endfor %}
-					</div>
+
+					{% if activity.id=='' %}
+						<div class="form-group">
+							<label for="activity_type_id">Type</label>
+							{% for type in types %}
+								<div class="radio">
+									<label>
+									<input type="radio" name="activity_type_id" id="activity_type_id" value="{{ type.id }}" {% if(activity_type_id==type.id) %}checked="checked"{% endif %} {% if(activity.activity_type_id==type.id) %}checked="checked"{% endif %}>
+									 <span class="label label-{%if type.polarity > 0%}success{%else%}danger{%endif%}">{{type.name}}</span> 
+									</label>
+								</div>
+							{% endfor %}
+						</div>
+					{% else %}
+
+						<input type="hidden" name="activity_type_id" id="activity_type_id" value="{{ activity.activity_type_id }}" />
+						<h3>{{activity.name}}</h3>
+
+
+						{% if activity.name=="Flickr" %}
+				 			<a href="{{activity.json_decoded.photo.urls.url}}" target="_blank"><img src="https://farm{{activity.json_decoded.photo.attributes.farm}}.staticflickr.com/{{activity.json_decoded.photo.attributes.server}}/{{activity.json_decoded.photo.attributes.id}}_{{activity.json_decoded.photo.attributes.secret}}.jpg" class="img-thumbnail"/></a><br />
+				 			{{activity.json_decoded.photo.title}}<br />
+				 			{% for tag in activity.json_decoded.photo.tags.tag %} #{{tag}}{% endfor %}
+				 			<br />
+				 			<small><a href="https://www.flickr.com/photos/{{activity.json_decoded.photo.owner.attributes.path_alias}}" target="_blank">@{{activity.json_decoded.photo.owner.attributes.path_alias}}</a></small>
+				 			<!-- <pre>{{activity.json_decoded|print_r}}</pre> -->
+				 		{% elseif activity.name=="Instagram" %}
+				 			<!-- <pre>{{activity.json_decoded|print_r}}</pre> -->
+				 			<a href="{{activity.json_decoded.link}}" target="_blank"><img src="{{activity.json_decoded.images.low_resolution.url}}" class="img-thumbnail"/></a>
+				 			<br />
+				 			{% for tag in activity.json_decoded.tags %} #{{tag}}{% endfor %}
+				 			<br />
+				 			<small><a href="http://instagram.com/{{activity.json_decoded.user.username}}" target="_blank">@{{activity.json_decoded.user.username}}</a></small>
+				 		{% elseif activity.name=="Foursquare" %}
+				 			<!-- <pre>{{activity.json_decoded|print_r}}</pre> -->
+				 			<img src="http://maps.googleapis.com/maps/api/staticmap?center={% for addr in activity.json_decoded.checkin.venue.location.formattedAddress %}{{addr}}{% endfor %}&zoom=15&size=500x350&maptype=roadmap
+		&markers=color:red%7Clabel:A%7C{{activity.json_decoded.checkin.venue.location.lat}},{{activity.json_decoded.checkin.venue.location.lng}}">
+				 			<a href="https://foursquare.com/v/{{activity.json_decoded.checkin.venue.id}}" target="_blank"><br />
+				 			{{activity.json_decoded.checkin.venue.name}}</a><br />
+				 			{% for addr in activity.json_decoded.checkin.venue.location.formattedAddress %}
+				 				<small>{{addr}}</small><br />
+				 			{% endfor %}
+				 			<br />
+				 			<small><a href="https://foursquare.com/u/{{activity.json_decoded.checkin.user.id}}" target="_blank">@{{activity.json_decoded.checkin.user.firstName}} {{activity.json_decoded.checkin.user.lastName}}</a></small>
+				 		{% endif %}
+
+					{% endif %}
+
 					<div class="form-group ">
 						<label for="quantity">Quantity</label>
 						<input type="text" class="form-control" name="quantity" id="quantity" placeholder="1" value="{%if activity.quantity != "" %}{{activity.quantity}}{%else%}1{%endif%}">
@@ -55,7 +92,10 @@
 								defaultDate: d.getTime()
 							});
 
+							{% if activity.id=='' %}
 							$('#date_added').focus();
+							{% endif %}
+
 							$('#activity_type_id').focus();
 
 							// console.log($('#date_added').attr('data-date'));
@@ -77,12 +117,15 @@
 
 		<script>
 			$(document).ready(function(){
+
 				$('#activity_form').submit(function(){
 
 					msg = "";
-					if($('#activity_type_id:checked').length==0){
-						msg += "- activity type\n";
-					}
+					{% if activity.id=='' %}
+						if($('#activity_type_id:checked').length==0 && $('#activity_type_id').val()!="") {
+							msg += "- activity type\n";
+						}
+					{% endif %}
 
 					if($('#quantity').val()==""){
 						msg += "- quantity\n";
