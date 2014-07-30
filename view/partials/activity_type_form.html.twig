@@ -25,19 +25,9 @@
 
 					<div class="form-group">
 						<label for="polarity">Polarity</label>
-							<div class="radio">
-								<label>
-								<input type="radio" name="polarity" id="polarity" value="1" {% if type.polarity > 0 %}checked{% endif %} {% if type.polarity == "" %}checked{% endif %}>
-								 <span class="label label-success">Good</span> 
-								</label>
-							</div>
-
-							<div class="radio">
-								<label>
-								<input type="radio" name="polarity" id="polarity" value="-1" {% if type.polarity !="" %}{% if type.polarity < 0 %}checked{% endif %}{% endif %}>
-								 <span class="label label-danger">Bad</span> 
-								</label>
-							</div>
+							<br />
+							<div class="slider slider-horizontal"></div>
+							<input type="hidden" value="{{type.polarity}}" id="polarity" name="polarity" />
 					</div>
 				  
 					<div class="form-group ">
@@ -45,6 +35,31 @@
 					</div>
 
 				</form>
+				<script>
+					$(document).ready(function(){
+
+						$('.slider').slider({
+							min: -100,
+							max: 100,
+							value: {{type.polarity}}
+						}).
+						on('slide', function(e){
+
+							$('.slider-handle').css('background-image', "none");
+							$('.slider-handle').attr('data-polarity-colorize', e.value);
+							$(document).trigger('polarity-colorize');
+						}).
+						on('slideStop', function(e){
+							$('#polarity').val(e.value);
+						})
+						;
+
+				      	$('.slider-handle').css('background-image', "none");
+				        $('.slider-handle').attr('data-polarity-colorize', {{type.polarity}});
+				        $(document).trigger('polarity-colorize');
+
+					});
+				</script>
 		</div>
 {% endblock %}
 

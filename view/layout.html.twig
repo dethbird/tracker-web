@@ -11,16 +11,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 	<!-- jquery -->
-	<script src="//assets.artistcontrolbox.com/js/jquery-1.10.2.min.js"></script>
+  <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+	<script src="//assets.artistcontrolbox.com/js/jquery-ui.min.js"></script>
   <script src="//assets.artistcontrolbox.com/js/url.min.js"></script>
+  <script src="http://code.jquery.com/color/jquery.color-2.1.0.min.js"></script>
 
 	<!-- bootstrap -->
 	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
 	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
   <link rel="stylesheet" href="/js/lib/bootstrap-datetimepicker/bootstrap-datetimepicker.min.css">
+  <link rel="stylesheet" href="//assets.artistcontrolbox.com/css/bootstrap-slider.css">
 	<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
   <script src="/js/lib/moment.min.js"></script>
   <script src="/js/lib/bootstrap-datetimepicker/bootstrap-datetimepicker.min.js"></script>
+  <script src="//assets.artistcontrolbox.com/js/bootstrap-slider.js"></script>
 
 	
   <link rel="stylesheet" href="/css/site.css">
@@ -196,6 +200,22 @@
       },
       3500
     );
+
+    $(document).on('polarity-colorize', function(){
+      $('[data-polarity-colorize]').each(function(i,e){
+        // console.log($(e).attr('data-polarity-colorize'));
+
+        var c = Math.floor(200 * ($(e).attr('data-polarity-colorize')/100));
+        var r = c < 0 ? -1 * c : 0;
+        var g = c > 0 ? c : 0;
+        var b = 200 - Math.abs(c);
+
+        $(e).css('background-color', "rgba(" + r  + "," + g + "," + b + ",1.0)");
+
+      });
+    });
+
+    $(document).trigger('polarity-colorize');
     
   });
  </script>
