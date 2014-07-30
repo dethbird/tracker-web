@@ -35,14 +35,19 @@
 					</div>
 
 				</form>
+				{% if type.polarity == null %}
+					{% set polarity = -50 %}
+				{% else %}					
+					{% set polarity = type.polarity %}
+				{% endif %}
 				<script>
 					$(document).ready(function(){
 
 						$('.slider').slider({
 							min: -100,
 							max: 100,
-							step: 10,
-							value: $('#polarity').val()=="" ? -50 : $('#polarity').val()
+							step:10,
+							value: {{polarity}}
 						}).
 						on('slide', function(e){
 
@@ -56,7 +61,7 @@
 						;
 
 				      	$('.slider-handle').css('background-image', "none");
-				        $('.slider-handle').attr('data-polarity-colorize', $('#polarity').val()=="" ? -50 : $('#polarity').val());
+				        $('.slider-handle').attr('data-polarity-colorize', {{polarity}});
 				        $(document).trigger('polarity-colorize');
 
 					});
