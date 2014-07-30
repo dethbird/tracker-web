@@ -22,7 +22,7 @@
 							<div class="radio">
 								<label>
 								<input type="radio" name="activity_type_id" id="activity_type_id" value="{{ type.id }}" {% if goal.activity_type_id==type.id %}checked="checked"{% endif %}>
-								 <span class="label label-{%if type.polarity > 0%}success{%else%}danger{%endif%}">{{type.name}}</span> 
+								 <span class="label" data-polarity-colorize="{{type.polarity}}">{{type.name}}</span> 
 								</label>
 							</div>
 						{% endfor %}

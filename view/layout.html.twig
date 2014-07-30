@@ -203,14 +203,23 @@
 
     $(document).on('polarity-colorize', function(){
       $('[data-polarity-colorize]').each(function(i,e){
-        // console.log($(e).attr('data-polarity-colorize'));
 
-        var c = Math.floor(200 * ($(e).attr('data-polarity-colorize')/100));
-        var r = c < 0 ? -1 * c : 0;
-        var g = c > 0 ? c : 0;
-        var b = 200 - Math.abs(c);
+        var polarity = $(e).attr('data-polarity-colorize');
+        console.log(polarity);
+        var color = $.Color(
+          polarity <= 0 ? 220 : 0,
+          polarity > 0 ? 210 : 0,
+          0,
+          1
+        );
 
-        $(e).css('background-color', "rgba(" + r  + "," + g + "," + b + ",1.0)");
+        var saturation = Math.abs(polarity) / 100;
+
+        color = color.saturation(saturation);
+        color = color.blue(Math.floor(128 * (1-saturation)));
+
+        $(e).css('background-color', color.toRgbaString());
+        // $(e).css('padding', Math.floor(8 * Math.abs(polarity)/100) + 2 + "px");
 
       });
     });

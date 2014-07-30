@@ -22,7 +22,7 @@
 		{% for type in types %}
 		<tr>
 			<td align="left">
-				<span class="label label-{%if type.polarity > 0%}success{%else%}danger{%endif%}">{{type.name}}</span> 
+				<span class="label" data-polarity-colorize="{{type.polarity}}">{{type.name}}</span> 
 			</td>
 			<td align="right">
 				<a class="btn btn-default btn-xs remove" href="/activity/type/{{type.id}}">edit</a>

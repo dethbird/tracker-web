@@ -134,9 +134,7 @@
 	    public function activity_name_label($activity_type_id, $acivity_types, $has_goal=null)
 	    {
 	    	$activity_type = $acivity_types[$activity_type_id];
-	    	return '<span class="label label-'.
-	    	($activity_type['polarity']>0?"success":"danger").
-	    	'" >'.
+	    	return '<span class="label" data-polarity-colorize="'.$activity_type['polarity'].'">'.
 	    	$activity_type['name'].
 
 	    	($has_goal=="Y" ? ' <span class="glyphicon glyphicon-'.($activity_type['polarity']>0?"star":"star-empty").'"></span>' : null).

@@ -27,7 +27,7 @@
 				<a class="btn btn-default btn-xs remove" href="/goals/{{goal.id}}">edit</a>
 			</td> -->
 			<td align="left">
-				<span class="label label-{%if goal.polarity > 0%}success{%else%}danger{%endif%}">{{goal.name}}</span>  {% if goal.operator=="<" %}<span class="glyphicon glyphicon-chevron-left"></span>{% elseif goal.operator=="=" %}<span class="glyphicon glyphicon-play"></span>{% elseif goal.operator==">" %}<span class="glyphicon glyphicon-chevron-right"></span>{% endif %} <strong>{{goal.occurrence}}</strong> / <strong>{{goal.timeframe}}</strong>
+				<span class="label" data-polarity-colorize="{{goal.polarity}}">{{goal.name}}</span>  {% if goal.operator=="<" %}<span class="glyphicon glyphicon-chevron-left"></span>{% elseif goal.operator=="=" %}<span class="glyphicon glyphicon-play"></span>{% elseif goal.operator==">" %}<span class="glyphicon glyphicon-chevron-right"></span>{% endif %} <strong>{{goal.occurrence}}</strong> / <strong>{{goal.timeframe}}</strong>
 				<br />
 			</td>
 			<td>
