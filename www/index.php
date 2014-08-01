@@ -511,8 +511,17 @@
 	*  REPORTS 
 	*/
 
-	$app->get('/activity/report', $authCheck($app, $client), function () use ($app) {
-	    $app->redirect('/activity/report/by/day');
+	$app->get('/report', $authCheck($app, $client), function () use ($app) {
+
+		if($app->request->isAjax()) {
+			echo json_encode(array("farts"));
+		} else {
+		    $app->render('partials/report.twig', array(
+		    	"section"=>"/reports",
+		    	"report"=>array(),
+		    	"user" => $_SESSION['user']
+	    	));
+		}
 	});
 
 
@@ -528,6 +537,13 @@
     	));
 
 	});
+
+	$app->get('/proxy/:route', $authCheck($app, $client), function ($route) use ($app, $client) {
+
+		$response = $client->get("/" . $route)->send();
+		echo $response->getBody(true);
+
+	});	
 
 
 	/**

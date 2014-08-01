@@ -1,0 +1,80 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}{{parent()}} / report{% endblock %}
+
+ {% block opengraph_meta %}
+  		{{parent()}}
+		<meta property="og:title" content="RishiSatsangi.com  / Art / {{data.name}}">
+		<meta property="og:description" content="{{data.description|striptags}}">
+  {% endblock %} 
+
+{% block body %}
+	{{ parent() }}
+	<!-- {{type|print_r}} -->
+    <div class="clearfix"></div>
+
+    <script type="text/html" id="template">
+    	<div class="row">
+	    	<span data-content="date_added.date" data-format="DateFormatter"></span> <span class="label label-default" data-content="name" data-template-bind='[{"attribute": "data-polarity-colorize", "value": "polarity"}]'></span>
+	    	<br />
+	    </div>
+	</script>	
+
+	<div class="row">
+		<div id="results">pizza</div>
+		<script>
+
+			var page = 1;
+	        var resultsPerPage = 25;
+	        var data = [];
+
+			$(document).ready(function(){
+
+			   	$.get( "/proxy/activity", function( response ) {
+			   			// console.log(response);
+						data = response.data;
+						renderPage(1);
+					},
+					'json'
+				);
+
+				$.addTemplateFormatter({
+				    DateFormatter : function(value, template) {
+
+				    	console.log(new Date(value));
+			            return value;
+			        }
+				});
+
+			   	function renderPage(pageNo) {
+			   		console.log(data);
+			   		console.log(pageNo);
+			   		page = pageNo;
+
+		            $("#results").loadTemplate("#template", data, {paged: true, pageNo: pageNo, elemPerPage: resultsPerPage, 
+		            	success: function() {console.log('success');},
+		            	complete: function(){
+		            		console.log('complete');
+		            		$(document).trigger('polarity-colorize');
+		           		},
+		           		error: function(){console.log('error');}});
+			            // page = pageNo;
+			            // if (page * resultsPerPage > data.length) {
+			            //     $("[data-action='next']").attr('disabled', 'disabled');
+			            // } else {
+			            //     $("[data-action='next']").removeAttr('disabled');
+			            // }
+			            // if (page <= 1) {
+			            //     $("[data-action='prev']").attr('disabled', 'disabled');
+			            // } else {
+			            //     $("[data-action='prev']").removeAttr('disabled');
+			            // }
+			            // $("#ResultsDisplay").show();
+			            // $("#ResultsPaging").show();
+		        }
+
+			 });
+		</script>
+	</div>
+{% endblock %}
+
