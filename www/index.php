@@ -563,7 +563,10 @@
 	$app->get('/account/social', $authCheck($app, $client), function () use ($app, $client, $configs, $instagramClient, $foursquareClient, $githubClient) {
 
 		$response = $client->get("/user/social")->send();
+
+		Logger::log($response->getBody(true));
 		$response = json_decode($response->getBody(true));
+
 
 		if(count($response->data->instagram)>0){
 			foreach($response->data->instagram as $instagram){
@@ -729,15 +732,14 @@
 
 		$request = json_decode($app->request->getBody(true));
 
-		print_r($request);
-
 		Logger::log($request);
 
-		// //throw this to api to process
-		// $response = $client->post("/social/activity/instagram", array(), array(
-		// 	"social_user_id" => $request[0]->object_id,
-		// 	"media_id" => $request[0]->data->media_id
-		// ))->send();
+		//throw this to api to process
+		$response = $client->post("/social/activity/github", array(), array(
+			"social_user_id" => $request->pusher->name,
+			"media_id" => $request->after,
+			"json" => $app->request->getBody(true)
+		))->send();
 	});
 
 	/**
