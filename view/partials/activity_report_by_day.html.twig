@@ -72,6 +72,18 @@
 						 			{% endfor %}
 						 			<br />
 						 			<small><a href="https://foursquare.com/u/{{log.json_decoded.checkin.user.id}}" target="_blank">@{{log.json_decoded.checkin.user.firstName}} {{log.json_decoded.checkin.user.lastName}}</a></small>
+						 		{% elseif log.name=="Github" %}
+						 			<strong>Repo:</strong><br />
+						 			<a href="{{log.json_decoded.repository.url}}" target="_blank">{{log.json_decoded.repository.name}}</a>
+						 			<br />
+						 			<br />
+						 			<strong>Commits:</strong><br />
+						 			<ul>
+						 			{% for commit in log.json_decoded.commits %}
+						 				<li><a href="{{commit.url}}" target="_blank">{{commit.message}}</a></li>
+						 			{% endfor %}
+						 			</ul>
+						 			<!-- <textarea>{{log|print_r}}</textarea> -->
 						 		{% endif %}
 						 		<br />
 					 			<small>{{log.note}}</small>
