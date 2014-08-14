@@ -73,6 +73,26 @@
 	</div>
 	{% endfor %}
 
+
+	<div class="row" >
+		<a href="/social/auth/github" class="btn btn-large btn-primary"><span class="glyphicon glyphicon-link"></span> Github Connect</a>
+	</div>
+
+	{% for github in social.github %}
+	<div class="media well">
+	  <!-- <pre>{{github|print_r}}</pre> -->
+	  <a class="pull-left" href="#">
+	    <img class="media-object" src="{{github._data.avatar_url}}" alt="..." width="150">
+	  </a>
+	  <div class="media-body">
+	    <h4 class="media-heading">@{{github._data.login}}</h4>
+	    connected: {{github.date_updated.date}}<br />
+	    <a href="#" class="btn btn-default btn-xs remove" data-id="{{github.id}}" data-type="github">Remove</a>
+	  </div>
+	</div>
+	{% endfor %}	
+
+
 	<script>
 		$(document).ready(function(){
 			$('.remove').click(function(){

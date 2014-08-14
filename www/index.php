@@ -25,7 +25,8 @@
 		$googleClient,
 		$instagramClient,
 		$flickrClient,
-		$foursquareClient;
+		$foursquareClient,
+		$githubClient;
 
 
 	//read env file
@@ -45,6 +46,7 @@
 	require '../vendor/autoload.php';
 	require_once '../lib/logger.php';
 
+	use OAuth\OAuth2\Service\GitHub;
 	use OAuth\Common\Storage\Session;
 	use OAuth\Common\Consumer\Credentials;
 	use OAuth\Common\Http\Uri\UriFactory;
@@ -99,7 +101,16 @@
 	);
 	$foursquareClient = $oauthServiceFactory->createService('Foursquare', $credentials, $session);
 
-	// var_dump($foursquareClient); die();
+	//Github Oauth Client
+	$credentials = new Credentials(
+	    $configs['github.key'],
+	    $configs['github.secret'],
+	    "http://" . $currentUri->getHost() . "/callback/oauth/github"
+	);
+
+	$githubClient = $oauthServiceFactory->createService('GitHub', $credentials, $session, array('user'));
+
+	// var_dump($gitHubClient); die();
 
 
 	// Twig Extension
@@ -549,7 +560,7 @@
 	/**
 	*  ACCOUNT 
 	*/
-	$app->get('/account/social', $authCheck($app, $client), function () use ($app, $client, $configs, $instagramClient, $foursquareClient) {
+	$app->get('/account/social', $authCheck($app, $client), function () use ($app, $client, $configs, $instagramClient, $foursquareClient, $githubClient) {
 
 		$response = $client->get("/user/social")->send();
 		$response = json_decode($response->getBody(true));
@@ -559,7 +570,8 @@
 				$instagramClient->setAccessToken($instagram->access_token);
 				$i = $instagramClient->getUser();
 				// print_r($i->data);
-				$instagram->_data = $i->data;
+				// var_dump($i);die();
+				$instagram->_data = isset($i->data) ? $i->data : array();
 			}
 		}
 		if(count($response->data->flickr)>0){
@@ -572,6 +584,7 @@
 						"user_id" => $flickr->nsid
 					)
 				);
+				// var_dump($xml);die();
 				$flickr->_data = json_decode(json_encode((array)$xml->person));
 			}
 		}
@@ -589,6 +602,26 @@
 				// Logger::log($foursquare);
 			}
 		}
+
+    	if(count($response->data->github)>0){
+			foreach($response->data->github as $github){
+
+				// HTTP client
+				$c = new Client("https://api.github.com", array(
+				    "request.options" => array(
+				       "headers" => array(
+					       "Authorization" => "token ".$github->access_token
+				       	)
+				    )
+				));
+
+				$r = $c->get('user')->send();
+				$github->_data = json_decode($r->getBody(true));
+			}
+		}
+
+
+		//render
 	    $app->render('partials/account_social.html.twig', array(
 	    	"section"=>"/account",
 	    	"social"=>$response->data,
@@ -689,7 +722,22 @@
 			"media_id" => $checkin->id
 		))->send();
 
-		Logger::log($response->getBody());
+		// Logger::log($response->getBody(true));
+	});
+
+	$app->post('/callback/subscribe/github', function () use ($app, $client) {
+
+		$request = json_decode($app->request->getBody(true));
+
+		print_r($request);
+
+		Logger::log($request);
+
+		// //throw this to api to process
+		// $response = $client->post("/social/activity/instagram", array(), array(
+		// 	"social_user_id" => $request[0]->object_id,
+		// 	"media_id" => $request[0]->data->media_id
+		// ))->send();
 	});
 
 	/**
@@ -706,6 +754,12 @@
 	$app->get('/social/auth/foursquare', function () use ($app, $client, $foursquareClient) {
 		// Logger::log($foursquareClient);
 		$url = $foursquareClient->getAuthorizationUri();
+		header('Location: '.$url);
+	});
+
+	$app->get('/social/auth/github', function () use ($app, $client, $githubClient) {
+		// Logger::log($foursquareClient);
+		$url = $githubClient->getAuthorizationUri();
 		header('Location: '.$url);
 	});
 
@@ -830,22 +884,12 @@
 			)
 		);
 
-		// Logger::log($xml2);
-
 		$personAttr = array();
 		foreach( $xml->person->attributes() as $k=>$v ){
 			$personAttr[$k] = (string) $v;
 		}
 		$personAttr['photosurl'] = (string) $xml->person->photosurl;
 		$personAttr['username'] = (string) $xml->person->username;
-
-
-		// echo "<pre>";
-		// print_r($xml);
-		// print_r($personAttr);
-		// echo "</pre>";
-		// die();
-
 
 		//post to create the new flickr
 		try {
@@ -865,15 +909,51 @@
 			$app->redirect("/account/social");
 		}
 
-		// echo "<pre>";
-		// // print_r($xml);
-		// print_r($response->getBody(true));
-		// echo "</pre>";
-		// die();
-
 		$response = json_decode($response->getBody(true));
 
 		$app->flash("success", "flickr user ". $personAttr['username'] ." connected");
+		$app->redirect("/account/social");
+
+	});
+
+	$app->get('/callback/oauth/github', function () use ($app, $client, $githubClient) {
+		
+		if(!isset($_GET['code'])){
+			$app->flash("error", "github not connected");
+			$app->redirect("/account/social");
+		}
+		$data = $githubClient->requestAccessToken($_GET['code']);
+
+
+		$accessToken = $data->getAccessToken();
+
+		if(!isset($accessToken)){
+			$app->flash("error", "github not connected");
+			$app->redirect("/account/social");
+		}
+
+		// Send a request with it
+    	$result = $githubClient->request('user');
+    	$result = json_decode($result);
+
+
+		//post to create the new github
+		try {
+			$response = $client->post("/user/github", array(), array(
+				"access_token" => $accessToken,
+				"github_user_id" => $result->id,
+				"username" => $result->login
+			))->send();
+		} catch (\Exception $e) {
+			Logger::log($e->getMessage());
+			$app->flash("error", "github connected to another user");
+			$app->redirect("/account/social");
+		}
+
+		$response = json_decode($response->getBody(true));
+
+
+		$app->flash("success", "github user ". $result->login ." connected");
 		$app->redirect("/account/social");
 
 	});
