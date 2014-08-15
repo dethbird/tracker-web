@@ -46,7 +46,7 @@
 							 	 <small>{{log.date_added.date|date_format("g:i a")}}</small>
 							 </td>
 							 <td class="note">
-							 	<!-- <pre>{{log.name|raw}}</pre> -->
+					 			<!-- <pre>{{log.json_decoded|print_r}}</pre> -->
 						 		{% if log.name=="Flickr" %}
 						 			<a href="{{log.json_decoded.photo.urls.url}}" target="_blank"><img src="https://farm{{log.json_decoded.photo.attributes.farm}}.staticflickr.com/{{log.json_decoded.photo.attributes.server}}/{{log.json_decoded.photo.attributes.id}}_{{log.json_decoded.photo.attributes.secret}}_m.jpg" class="img-thumbnail"/></a>
 						 			<br />
@@ -56,7 +56,10 @@
 						 			<small><a href="https://www.flickr.com/photos/{{log.json_decoded.photo.owner.attributes.path_alias}}" target="_blank">@{{log.json_decoded.photo.owner.attributes.path_alias}}</a></small>
 						 			<!-- <pre>{{log.json_decoded|print_r}}</pre> -->
 						 		{% elseif log.name=="Instagram" %}
+						 			<!-- <pre>{{log.json_decoded|print_r}}</pre> -->
 						 			<a href="{{log.json_decoded.link}}" target="_blank"><img src="{{log.json_decoded.images.thumbnail.url}}" class="img-thumbnail" /></a>
+						 			<br />
+						 			{{log.json_decoded.caption.text}}
 						 			<br />
 						 			{% for tag in log.json_decoded.tags %} #{{tag}}{% endfor %}
 						 			<br />
@@ -76,22 +79,31 @@
 						 			<strong>Repo:</strong><br />
 						 			<a href="{{log.json_decoded.repository.url}}" target="_blank">{{log.json_decoded.repository.name}}</a>
 						 			<br />
-						 			<br />
 						 			<strong>Commits:</strong><br />
-						 			<ul>
+						 			<blockquote>
 						 			{% for commit in log.json_decoded.commits %}
-						 				<li><a href="{{commit.url}}" target="_blank">{{commit.message}}</a></li>
+						 				<a href="{{commit.url}}" target="_blank">{{commit.message}}</a><br />
+						 				{%if commit.modified|length > 0 %}
+						 				Modified:
+						 				<ul>
+						 					{% for file in commit.modified %}
+						 						<li>/{{file}}</li>
+						 					{% endfor %}
+						 				</ul>
+						 				{%endif%}
+
+
 						 			{% endfor %}
-						 			</ul>
+						 			</blockquote>
 						 			<!-- <textarea>{{log|print_r}}</textarea> -->
 						 		{% endif %}
 						 		<br />
 					 			<small>{{log.note}}</small>
 							 </td>
-							 <td class="name">
+							 <td class="quantity">
 							 	<span class="badge">{{log.quantity}}</span>
 							 </td>
-							 <td class="time">
+							 <td class="action">
 							 	  <button type="button" class="btn btn-info btn-xs edit" data-id="{{log.id}}"><!-- <span class="glyphicon glyphicon-pencil"></span> -->edit</button>
 							 	  <button type="button" class="btn btn-default btn-xs remove" data-id="{{log.id}}"><!-- <span class="glyphicon glyphicon-remove"></span> -->remove</button>
 							 </td>

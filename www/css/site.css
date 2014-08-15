@@ -50,25 +50,29 @@ h1,h2,h3,h4,h5,h6,.navbar-brand {
 }
 
 td.quantity {
-	width:100px;
-	text-align:right;
+	width:30px;
+	text-align:left;
 }
 td.name {
-	width:200px;
+	width:120px;
 	padding-right:10px;
 }
 td.note {
-	width:150px;
 	font-size: 0.8em;
+	width:500px;
 }
 td.note small {
 	/*font-size: .7em;*/
 }
 td.time {
+	width:80px;
 	font-size: 0.8em;
 	/*text-align:left;*/
 }
 td.action {
 	width:120px;
+}
+td blockquote {
+	font-size: 0.8em;
 }
 
