@@ -106,6 +106,7 @@
 							 <td class="action">
 							 	  <button type="button" class="btn btn-info btn-xs edit" data-id="{{log.id}}"><!-- <span class="glyphicon glyphicon-pencil"></span> -->edit</button>
 							 	  <button type="button" class="btn btn-default btn-xs remove" data-id="{{log.id}}"><!-- <span class="glyphicon glyphicon-remove"></span> -->remove</button>
+							 	  <button type="button" class="btn {% if log.public==1 %}btn-success{% else %}btn-default{% endif %} btn-small privacy {% if log.public==1 %}public{% endif %}" data-id="{{log.id}}"><span class="glyphicon glyphicon-globe"></span></button>
 							 </td>
 						</tr>
 					 {% endfor %}
@@ -231,14 +232,7 @@
 					document.location = "/activity/" + $(this).attr('data-id');
 				});
 				$('.note').each(function(){
-					// var hashtags = /\#\w+/g.exec( $(this).html());
 					var that = $(this);
-					// $(hashtags).each(function(i,h){
-					// 	console.log(h);
-					// 	that.html(
-					// 		that.html().replace(h, "<strong>" + h + "</strong>")
-					// 	);
-					// });
 					var hashtag_regexp = /#([a-zA-Z0-9]+)/g;
 					that.html(
 						that.html().replace(
@@ -246,10 +240,35 @@
 					        '<a class="hashtag" target="_blank">#$1</a>'
 				        )
 				    );
-
-				
 				});
-				// /#\w+/g
+				$('.privacy').click(function(){
+					var that = $(this);
+					that.attr('disabled', 'disabled');
+					var span = $(this).find('span');
+					var pub = span.hasClass('public');
+
+
+					$.ajax({
+						type: "POST",
+						url: "/activity/" + $(this).attr('data-id'),
+						data: {
+							public : pub===true ? 0 : 1
+						},
+						success: function(data){
+							that.removeAttr('disabled');
+							if(data.data.public==1) {
+								that.removeClass('btn-default').addClass('btn-success');
+								span.addClass('public');
+							} else {
+								that.removeClass('btn-success').addClass('btn-default');
+								span.removeClass('public');
+							}
+						},
+						dataType: 'json'
+
+					});
+
+				});
 			});
 		</script>
 		<form action="/activity/delete" method="post" id="delete_activity_form" name="delete_activity_form">
