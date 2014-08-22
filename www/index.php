@@ -389,14 +389,17 @@
 	$app->post('/activity/:id', $authCheck($app, $client), function ($id) use ($app, $client) {
 
 		$response = $client->patch("activity/".$id, array(), $app->request->params())->send();
-		// var_dump($response->getBody(true)); die();
-		$response = json_decode($response->getBody(true));
 
-		if($response->status===true){
-			$app->flash("success", "Activity updated");
-			$app->redirect("/activity/report/by/day");
+		if($app->request->isAjax()){
+			echo $response->getBody(true);
 		} else {
-			$app->redirect("/activity/add");
+			$response = json_decode($response->getBody(true));
+			if($response->status===true){
+				$app->flash("success", "Activity updated");
+				$app->redirect("/activity/report/by/day");
+			} else {
+				$app->redirect("/activity/add");
+			}
 		}
 
 	});
