@@ -541,13 +541,29 @@
 
 	$app->get('/activity/report/by/day', $authCheck($app, $client), function () use ($app, $client) {
 
-		$response = $client->get("/activity/report/by/day")->send();
+
+
+		$request = $app->request;
+		$params = $request->params();
+		// var_dump($params); die();
+		if(!isset($params['from_date'])){
+			$params['from_date'] = date("Y-m-d", strtotime("+1 day", strtotime(date("Y-m-d"))));
+		}
+		if(!isset($params['to_date'])){
+			$params['to_date'] = date("Y-m-d", strtotime("-7 day", strtotime(date("Y-m-d"))));
+		}
+
+		// print_r(http_build_query($params));die();
+		$request = $client->get("/activity/report/by/day?" . http_build_query($params));
+		$response = $request->send();
+		// print_r($response->getBody(true));die();
 		$response = json_decode($response->getBody(true), true);
 
 	    $app->render('partials/activity_report_by_day.html.twig', array(
 	    	"section"=>"/reports",
 	    	"report"=>$response['data'],
-	    	"user" => $_SESSION['user']
+	    	"user" => $_SESSION['user'],
+	    	"filterParams" => $params
     	));
 
 	});
