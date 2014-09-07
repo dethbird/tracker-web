@@ -1,6 +1,6 @@
 {% extends 'layout.html.twig' %}
 
-{% block title %}{{parent()}} / activity / add{% endblock %}
+{% block title %}{{parent()}} / account / social{% endblock %}
 
  {% block opengraph_meta %}
   		{{parent()}}
@@ -88,6 +88,26 @@
 	    <h4 class="media-heading">@{{github._data.login}}</h4>
 	    connected: {{github.date_updated.date}}<br />
 	    <a href="#" class="btn btn-default btn-xs remove" data-id="{{github.id}}" data-type="github">Remove</a>
+	  </div>
+	</div>
+	{% endfor %}	
+
+
+
+	<div class="row" >
+		<a href="/social/auth/twitter" class="btn btn-large btn-primary"><span class="glyphicon glyphicon-link"></span> Twitter Connect</a>
+	</div>
+
+	{% for twitter in social.twitter %}
+	<div class="media well">
+	  <!-- <pre>{{twitter|print_r}}</pre> -->
+	  <a class="pull-left" href="#">
+	    <img class="media-object" src="{{twitter._data.profile_image_url}}" alt="..." width="150">
+	  </a>
+	  <div class="media-body">
+	    <h4 class="media-heading">@{{twitter._data.name}}</h4>
+	    connected: {{twitter.date_updated.date}}<br />
+	    <a href="#" class="btn btn-default btn-xs remove" data-id="{{twitter.id}}" data-type="twitter">Remove</a>
 	  </div>
 	</div>
 	{% endfor %}	
