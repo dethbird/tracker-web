@@ -46,11 +46,13 @@
 	require '../vendor/autoload.php';
 	require_once '../lib/logger.php';
 
+	use OAuth\OAuth1\Service\Twitter;
 	use OAuth\OAuth2\Service\GitHub;
 	use OAuth\Common\Storage\Session;
 	use OAuth\Common\Consumer\Credentials;
 	use OAuth\Common\Http\Uri\UriFactory;
 	use Guzzle\Http\Client;
+	use GuzzleHttp\Subscriber\Oauth\Oauth1;
 	use Google\Client as GoogleClient;
 	use Jcroll\FoursquareApiClient\Client\FoursquareClient;
 
@@ -109,6 +111,16 @@
 	);
 
 	$githubClient = $oauthServiceFactory->createService('GitHub', $credentials, $session, array('user'));
+
+
+	//Twitter Oauth Client
+	$credentials = new Credentials(
+	    $configs['twitter.key'],
+	    $configs['twitter.secret'],
+	    "http://" . $currentUri->getHost() . "/callback/oauth/twitter"
+	);
+
+	$twitterClient = $oauthServiceFactory->createService('twitter', $credentials, $session);
 
 	// var_dump($gitHubClient); die();
 
@@ -579,7 +591,7 @@
 	/**
 	*  ACCOUNT 
 	*/
-	$app->get('/account/social', $authCheck($app, $client), function () use ($app, $client, $configs, $instagramClient, $foursquareClient, $githubClient) {
+	$app->get('/account/social', $authCheck($app, $client), function () use ($app, $client, $configs, $instagramClient, $foursquareClient, $githubClient, $twitterClient) {
 
 		$response = $client->get("/user/social")->send();
 
@@ -639,6 +651,26 @@
 
 				$r = $c->get('user')->send();
 				$github->_data = json_decode($r->getBody(true));
+			}
+		}
+
+    	if(count($response->data->twitter)>0){
+			foreach($response->data->twitter as $twitter){
+				// HTTP client
+				$c = new \Guzzle\Http\Client('https://api.twitter.com/{version}', array(
+			        'version' => '1.1'
+			    ));
+				$c->addSubscriber(new Guzzle\Plugin\Oauth\OauthPlugin(array(
+				    'consumer_key'    => $configs['twitter.key'],
+				    'consumer_secret' => $configs['twitter.secret'],
+				    'token'           => $twitter->access_token,
+				    'token_secret'    => $twitter->access_token_secret,
+				)));
+
+				$r = $c->get('account/verify_credentials.json')->send();
+
+				$twitter->_data = json_decode($r->getBody(true));
+
 			}
 		}
 
@@ -781,6 +813,12 @@
 	$app->get('/social/auth/github', function () use ($app, $client, $githubClient) {
 		// Logger::log($foursquareClient);
 		$url = $githubClient->getAuthorizationUri();
+		header('Location: '.$url);
+	});
+
+	$app->get('/social/auth/twitter', function () use ($app, $client, $twitterClient) {
+		$token = $twitterClient->requestRequestToken();
+   		$url = $twitterClient->getAuthorizationUri(array('oauth_token' => $token->getRequestToken()));
 		header('Location: '.$url);
 	});
 
@@ -975,6 +1013,52 @@
 
 
 		$app->flash("success", "github user ". $result->login ." connected");
+		$app->redirect("/account/social");
+
+	});
+
+	$app->get('/callback/oauth/twitter', function () use ($app, $client, $twitterClient, $session) {
+		
+		if(!isset($_GET['oauth_token'])){
+			$app->flash("error", "twitter not connected");
+			$app->redirect("/account/social");
+		}
+
+	    $token = $session->retrieveAccessToken('Twitter');
+
+	    // This was a callback request from twitter, get the token
+	    $t = $twitterClient->requestAccessToken(
+	        $_GET['oauth_token'],
+	        $_GET['oauth_verifier'],
+	        $token->getRequestTokenSecret()
+	    );
+
+
+		if(!isset($t)){
+			$app->flash("error", "twitter not connected");
+			$app->redirect("/account/social");
+		}
+
+		// Send a request with it
+    	$result =  $result = json_decode($twitterClient->request('account/verify_credentials.json'));
+
+		//post to create the new twitter
+		try {
+			$response = $client->post("/user/twitter", array(), array(
+				"access_token" => $t->getAccessToken(),
+				"access_token_secret" => $t->getAccessTokenSecret(),
+				"twitter_user_id" => $result->id,
+				"username" => $result->name
+			))->send();
+		} catch (\Exception $e) {
+			Logger::log($e->getMessage());
+			$app->flash("error", "twitter connected to another user");
+			$app->redirect("/account/social");
+		}
+		$response = json_decode($response->getBody(true));
+
+
+		$app->flash("success", "twitter user ". $result->name ." connected");
 		$app->redirect("/account/social");
 
 	});
