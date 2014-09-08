@@ -12,9 +12,6 @@
 	{{ parent() }}
     <div class="clearfix"></div>
 
-<!-- <pre>
-{{report|print_r}}
-</pre> -->
 		<div class='row '>
 			<form role="form" method="get" action="/activity/report/by/day" >
 				<div class="form-group ">
@@ -64,18 +61,15 @@
 							 	 <small>{{log.date_added.date|date_format("g:i a")}}</small>
 							 </td>
 							 <td class="note">
-					 			<!-- <pre>{{log.json_decoded|print_r}}</pre> -->
 						 		{% if log.name=="Flickr" %}
-						 			<a href="{{log.json_decoded.photo.urls.url}}" target="_blank"><img src="https://farm{{log.json_decoded.photo.attributes.farm}}.staticflickr.com/{{log.json_decoded.photo.attributes.server}}/{{log.json_decoded.photo.attributes.id}}_{{log.json_decoded.photo.attributes.secret}}_m.jpg" class="img-thumbnail"/></a>
+						 			<a href="{{log.json_decoded.photo.urls.url}}" target="_blank"><img src="https://farm{{log.json_decoded.photo.attributes.farm}}.staticflickr.com/{{log.json_decoded.photo.attributes.server}}/{{log.json_decoded.photo.attributes.id}}_{{log.json_decoded.photo.attributes.secret}}.jpg" class="img-thumbnail"/></a>
 						 			<br />
 						 			{{log.json_decoded.photo.title}}<br />
 						 			{% for tag in log.json_decoded.photo.tags.tag %} #{{tag}}{% endfor %}
 						 			<br />
 						 			<small><a href="https://www.flickr.com/photos/{{log.json_decoded.photo.owner.attributes.path_alias}}" target="_blank">@{{log.json_decoded.photo.owner.attributes.path_alias}}</a></small>
-						 			<!-- <pre>{{log.json_decoded|print_r}}</pre> -->
 						 		{% elseif log.name=="Instagram" %}
-						 			<!-- <pre>{{log.json_decoded|print_r}}</pre> -->
-						 			<a href="{{log.json_decoded.link}}" target="_blank"><img src="{{log.json_decoded.images.thumbnail.url}}" class="img-thumbnail" /></a>
+						 			<a href="{{log.json_decoded.link}}" target="_blank"><img src="{{log.json_decoded.images.low_resolution.url}}" class="img-thumbnail" /></a>
 						 			<br />
 						 			{{log.json_decoded.caption.text}}
 						 			<br />
@@ -83,7 +77,6 @@
 						 			<br />
 						 			<small><a href="http://instagram.com/{{log.json_decoded.user.username}}" target="_blank">@{{log.json_decoded.user.username}}</a></small>
 						 		{% elseif log.name=="Foursquare" %}
-						 			<!-- <pre>{{log.json_decoded|print_r}}</pre> -->
 						 			<img src="http://maps.googleapis.com/maps/api/staticmap?center={% for addr in log.json_decoded.checkin.venue.location.formattedAddress %}{{addr}}{% endfor %}&zoom=15&size=200x150&maptype=roadmap
 &markers=color:red%7Clabel:A%7C{{log.json_decoded.checkin.venue.location.lat}},{{log.json_decoded.checkin.venue.location.lng}}" />
 									<br />
@@ -113,7 +106,20 @@
 
 						 			{% endfor %}
 						 			</blockquote>
-						 			<!-- <textarea>{{log|print_r}}</textarea> -->
+						 		{% elseif log.name=="Twitter" %}
+						 			{{log.json_decoded.text}}
+						 			{% for url in log.json_decoded.entities.urls %}
+						 				<br />
+					 					[ <a href="{{url.expanded_url}}" />{{url.expanded_url}}</a> ]
+						 			{% endfor %}
+						 			{% for media in log.json_decoded.entities.media %}
+						 				<br />
+						 				{% if media.type=="photo" %}
+						 					<img src="{{ media.media_url|strip_tags }}" class="img-thumbnail" />
+						 				{% endif %}
+						 			{% endfor %}
+						 			<br />
+						 			<small><a href="https://twitter.com/{{log.json_decoded.user.name}}" target="_blank">@{{log.json_decoded.user.name}}</a></small>
 						 		{% endif %}
 						 		<br />
 					 			<small>{{log.note}}</small>
@@ -258,6 +264,8 @@
 					        '<a class="hashtag" target="_blank">#$1</a>'
 				        )
 				    );
+
+		    		that.html(that.html().autoLink());
 				});
 				$('.privacy').click(function(){
 					var that = $(this);

@@ -76,3 +76,7 @@ td blockquote {
 	font-size: 0.8em;
 }
 
+td.note .img-thumbnail {
+	max-width: 300px;
+	max-height: 300px;
+}
