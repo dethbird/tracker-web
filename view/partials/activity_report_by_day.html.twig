@@ -107,7 +107,7 @@
 						 			{% endfor %}
 						 			</blockquote>
 						 		{% elseif log.name=="Twitter" %}
-						 			{{log.json_decoded.text}}
+						 			{{log.json_decoded.text|raw}}
 						 			{% for url in log.json_decoded.entities.urls %}
 						 				<br />
 					 					[ <a href="{{url.expanded_url}}" />{{url.expanded_url}}</a> ]
