@@ -1,4 +1,5 @@
 <div class="action">
+	  {%if log.quantity > 1%}<span class="badge">{{log.quantity}}</span> {%endif%}
 	  <button type="button" class="btn btn-info btn-xs edit" data-id="{{log.id}}">edit</button>
 	  <button type="button" class="btn btn-default btn-xs remove" data-id="{{log.id}}">remove</button>
 	  <button type="button" class="btn {% if log.public==1 %}btn-success{% else %}btn-default{% endif %} btn-small privacy {% if log.public==1 %}public{% endif %}" data-id="{{log.id}}"><span class="glyphicon glyphicon-globe"></span></button>

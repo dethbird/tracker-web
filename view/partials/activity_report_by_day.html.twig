@@ -50,12 +50,6 @@
 			      <tbody>
 					 {% for log in day.logs %}
 				      	<tr>
-							 <!-- <td class="name">
-							 	{{log.activity_type_id|activity_name_label(report.activity_types, log.has_goal)|raw}}
-							 </td> 
-							 <td class="time">
-							 	 <small>{{log.date_added.date|date_format("g:i a")}}</small>
-							 </td> -->
 							 <td class="recent-activity">
 						 		{% if log.name=="Flickr" %}
 
@@ -72,6 +66,8 @@
 							 			{% for tag in log.json_decoded.photo.tags.tag %} #{{tag}}{% endfor %}
 							 			<br />
 						 			</div>
+
+						 			<!-- <pre>{{log|print_r}}</pre> -->
 						 		{% elseif log.name=="Instagram" %}
 
 							 		<div class="activity-stamp well">
@@ -198,14 +194,6 @@
 					 			</div>
 					 			{%endif%}
 							 </td>
-							 <!-- <td class="quantity">
-							 	<span class="badge">{{log.quantity}}</span>
-							 </td>
-							 <td class="action">
-							 	  <button type="button" class="btn btn-info btn-xs edit" data-id="{{log.id}}">edit</button>
-							 	  <button type="button" class="btn btn-default btn-xs remove" data-id="{{log.id}}">remove</button>
-							 	  <button type="button" class="btn {% if log.public==1 %}btn-success{% else %}btn-default{% endif %} btn-small privacy {% if log.public==1 %}public{% endif %}" data-id="{{log.id}}"><span class="glyphicon glyphicon-globe"></span></button>
-							 </td> -->
 						</tr>
 					 {% endfor %}
 			 	   <tbody>
@@ -357,7 +345,7 @@
 					var that = $(this);
 					that.attr('disabled', 'disabled');
 					var span = $(this).find('span');
-					var pub = span.hasClass('public');
+					var pub = that.hasClass('public');
 
 					$.ajax({
 						type: "POST",
@@ -369,10 +357,10 @@
 							that.removeAttr('disabled');
 							if(data.data.public==1) {
 								that.removeClass('btn-default').addClass('btn-success');
-								span.addClass('public');
+								that.addClass('public');
 							} else {
 								that.removeClass('btn-success').addClass('btn-default');
-								span.removeClass('public');
+								that.removeClass('public');
 							}
 						},
 						dataType: 'json'
