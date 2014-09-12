@@ -49,6 +49,7 @@ h1,h2,h3,h4,h5,h6,.navbar-brand {
 	text-align: right;
 }
 
+/*
 td.quantity {
 	width:30px;
 	text-align:left;
@@ -62,12 +63,10 @@ td.note {
 	width:500px;
 }
 td.note small {
-	/*font-size: .7em;*/
 }
 td.time {
 	width:80px;
 	font-size: 0.8em;
-	/*text-align:left;*/
 }
 td.action {
 	width:150px;
@@ -75,8 +74,121 @@ td.action {
 td blockquote {
 	font-size: 0.8em;
 }
+*/
 
-td.note .img-thumbnail {
-	max-width: 300px;
-	max-height: 300px;
+
+.recent-activity {
+	position:relative;
+	padding:10px;
+	text-align:center;
+}
+.recent-activity-body {
+	text-align:left;
+	padding:15px 10px 25px 25px;
+	max-width:550px;
+	font-size: 0.9em;
+	color:#555;
+}
+
+.activity-stamp .date {
+	font-size: 0.7em;
+}
+.activity-stamp .user {
+	font-size: 0.7em;
+	font-weight: bold;
+}
+.recent-activity .img-thumbnail {
+	max-width: 350px;
+	max-height: 350px;
+	left:50%;
+}
+
+.recent-activity .activity-stamp {
+	/* margin:5px 0px 15px 15px; */
+	text-align:left;
+	margin:0px 0px 5px 0px;
+	padding:5px;
+}
+
+.social-icon,
+.recent-activity .activity-icon {
+	display: block;
+	/* background-color:green; */
+	width: 32px;
+	height: 32px;
+	float:left;
+	margin-right: 10px;
+	/* position: absolute;
+	left:-16px;
+	top:-16px; */
+}
+.social-icon {
+	margin-right:10px;
+}
+
+.social-icon.flickr,
+.recent-activity .activity-icon.flickr {
+	background-image:url('http://images.rishisatsangi.com/social-media-icons/flickr-32-32.png');
+}
+.social-icon.instagram,
+.recent-activity .activity-icon.instagram {
+	background-image:url('http://images.rishisatsangi.com/social-media-icons/instagram-32-32.png');
+}
+.social-icon.photo,
+.recent-activity .activity-icon.photo {
+	background-image:url('http://images.rishisatsangi.com/social-media-icons/photo-32-32.png');
+}
+.social-icon.twitter,
+.recent-activity .activity-icon.twitter {
+	background-image:url('http://images.rishisatsangi.com/social-media-icons/twitter-32-32.png');
+}
+.social-icon.github,
+.recent-activity .activity-icon.github {
+	background-image:url('http://images.rishisatsangi.com/social-media-icons/github-32-32.png');
+}
+.social-icon.email,
+.recent-activity .activity-icon.email {
+	background-image:url('http://images.rishisatsangi.com/social-media-icons/email-32-32.png');
+}
+.social-icon.deviantart,
+.recent-activity .activity-icon.deviantart {
+	background-image:url('http://images.rishisatsangi.com/social-media-icons/deviantart-32-32.png');
+}
+.social-icon.tumblr,
+.recent-activity .activity-icon.tumblr {
+	background-image:url('http://images.rishisatsangi.com/social-media-icons/tumblr-32-32.png');
+}
+.social-icon.comment,
+.recent-activity .activity-icon.comment {
+	background-image:url('http://images.rishisatsangi.com/social-media-icons/comment-32-32.png');
+}
+.social-icon.foursquare,
+.recent-activity .activity-icon.foursquare {
+	background-image:url('http://images.rishisatsangi.com/social-media-icons/foursquare-32-32.png');
+}
+
+
+.activity-stamp.well > span.label {
+	float:left;
+	margin-right: 10px;
+}
+
+.activity-stamp.well .action {
+	float:right;
+	position: relative;
+	display: inline;
+}
+
+.recent-activity pre {
+	text-align: left;	
+}
+
+div.container.recent-activity {
+	float:left;
+	text-align:left;
+}
+
+span.title {
+	font-size:1em;
+	text-shadow:-1px -1px 2px #CCC;
 }

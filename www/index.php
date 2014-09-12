@@ -134,7 +134,8 @@
 	            new \Twig_SimpleFilter('print_r', array($this, 'print_r')),
 	            new \Twig_SimpleFilter('date_format', array($this, 'date_format')),
 	            new \Twig_SimpleFilter('activity_name_label', array($this, 'activity_name_label')),
-	            new \Twig_SimpleFilter('strip_tags', array($this, 'strip_tags'))
+	            new \Twig_SimpleFilter('strip_tags', array($this, 'strip_tags')),
+	            new \Twig_SimpleFilter('substr', array($this, 'substr'))
 	        );
 	    }
 
@@ -152,7 +153,13 @@
 	    public function strip_tags($html)
 	    {
 	        return strip_tags($html);
-	    }	    
+	    }
+
+	    public function substr($output, $from, $to)
+	    {
+	        return substr($output,$from,$to);
+	    }
+  
 
 	    public function getName()
 	    {
