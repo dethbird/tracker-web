@@ -23,9 +23,20 @@
 					<input type="text" class="form-control" name="to_date" id="to_date" placeholder="7" value="{{filterParams.to_date}}">
 				</div>
 				<div class="form-group ">
+					<label for="public">Activity</label>
+					
+					<select class="form-control" name="activity_type_id" id="activity_type_id">
+						<option value="">--All--</option>
+						{%for activity in activities%}
+							<option value="{{activity.id}}" {% if filterParams.activity_type_id==activity.id %}selected="selected"{% endif %}>{{activity.name}}</option>
+						{%endfor%}		
+					</select>
+				</div>
+				<div class="form-group ">
 					<label for="public">Public</label>
 					<input type="checkbox" class="form-control" name="public" id="public" value="1" {% if filterParams.public==1 %}checked="checked"{% endif %}>
 				</div>
+				
 				<div class="form-group ">
 					<button type="submit" class="btn btn-default">Filter</button>
 				</div>
